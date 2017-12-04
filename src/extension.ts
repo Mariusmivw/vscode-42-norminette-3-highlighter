@@ -66,19 +66,14 @@ export function activate(context: vscode.ExtensionContext) {
 			const line = []
 			const normDecrypted = []
 			const proc = exec('norminette ' + filename, function (error, stdout, stderr) {
-				console.log(stdout)
 				stdout.split('\n').forEach((e, i) => {
 					if (i == 0)
 						return;
-					const tb = e.split(":").splice(1)
-					let str = "";
-					tb.forEach(e => str += ":" + e)
-					line.push(str)
+					line.push(e)
 				})
 			})
 			proc.on('close', (exitCode) => {
 				try {
-					console.log("HI\n")
 					line.pop()
 					line.forEach((e) => {
 						normDecrypted.push(normDecrypt(e))
@@ -91,13 +86,16 @@ export function activate(context: vscode.ExtensionContext) {
 	}
 
 	function normDecrypt(normLine: String) {
-		console.log(normLine)
-		const [line, col] = normLine.split(":")[1].match(/[0-9]+/g).map(e => +e)
-		return {
+		let line, col
+		const array = normLine.split(":")[0].match(/[0-9]+/g)
+		if (array)
+			[line, col] = array.map(e => +e)
+		const ob =  {
 			line: line < 0 ? 0 : line-1 || 0,
 			col,
 			fullText: normLine,
-			errorText: normLine.split(":")[2]
+			errorText: normLine.split(":")[1]
 		}
+		return ob;
 	}
 }
