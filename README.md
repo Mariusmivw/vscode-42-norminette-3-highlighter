@@ -2,7 +2,7 @@
   src="https://raw.githubusercontent.com/thijsdejong/vscode-codam-norminette/master/codam.png"
   width=128>
 
-# Codam Header for VSCode
+# Codam Norminette for VSCode
 
 This extension provides is a Norminette decorator for Codam in VSCode
 
