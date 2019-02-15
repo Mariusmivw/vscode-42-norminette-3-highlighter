@@ -1,6 +1,6 @@
 {
-	"name": "codam-norminette",
-	"description": "Codam norminette decorator for vscode with settings",
+	"name": "Codam Norminette",
+	"description": "Codam Norminette decorator for VSCode",
 	"version": "19.2.2",
 	"publisher": "thijsdejong",
 	"license": "MIT",
