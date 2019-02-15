@@ -22,7 +22,7 @@ If there are changes to the file, the norm is automatically checked on save.
 
 ```ts
 {
-  "codam-norminette.command": "norminetee",
+  "codam-norminette.command": "norminette",
   "codam-norminette.fileregex": "\\.[ch]$"
 }
 ```
