@@ -1,5 +1,6 @@
 {
-	"name": "Codam Norminette",
+	"name": "codam-norminette",
+	"displayName": "Codam Norminette",
 	"description": "Codam Norminette decorator for VSCode",
 	"version": "19.2.2",
 	"publisher": "thijsdejong",
