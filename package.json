@@ -1,7 +1,7 @@
 {
 	"name": "codam-norminette",
 	"description": "Codam norminette decorator for vscode with settings",
-	"version": "19.2.1",
+	"version": "19.2.2",
 	"publisher": "thijsdejong",
 	"license": "MIT",
 	"engines": {
@@ -11,7 +11,7 @@
 	  "Other"
 	],
 	"activationEvents": [
-	  "onLanguage:c"
+	  "*"
 	],
 	"icon": "codam.png",
 	"main": "./out/extension",
@@ -38,8 +38,8 @@
 		  },
 		  "codam-norminette.fileregex": {
 			"type": "string",
-			"default": "^ft.*\\.[ch]$",
-			"description": "Specifies which c file to run norminette on \n defaults to ^ft.*\\.[ch]$"
+			"default": "\\.[ch]$",
+			"description": "Specifies which c file to run norminette on \n defaults to \\.[ch]$"
 		  }
 		}
 	  }

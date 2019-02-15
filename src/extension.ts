@@ -70,7 +70,7 @@ export function activate(context: vscode.ExtensionContext) {
 		return new Promise((resolve, reject) => {
 			const line = []
 			const normDecrypted = []
-			const proc = exec(`${command} ${filename}`, function (error, stdout, stderr) {
+			const proc = exec(command + " " +  filename, function (error, stdout, stderr) {
 				stdout.split('\n').forEach((e, i) => {
 					if (i == 0)
 						return;
