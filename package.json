@@ -2,48 +2,58 @@
 	"name": "codam-norminette",
 	"displayName": "Codam Norminette",
 	"description": "Codam Norminette decorator for VSCode",
-	"version": "19.2.4",
+	"version": "19.9.1",
 	"publisher": "thijsdejong",
 	"license": "MIT",
 	"engines": {
-	  "vscode": "^1.6.0"
+		"vscode": "^1.6.0"
 	},
 	"categories": [
-	  "Other"
+		"Other"
 	],
 	"activationEvents": [
-	  "*"
+		"*"
 	],
 	"icon": "codam.png",
 	"main": "./out/extension",
 	"scripts": {
-	  "vscode:prepublish": "tsc -p ./",
-	  "compile": "tsc -watch -p ./",
-	  "postinstall": "node ./node_modules/vscode/bin/install"
+		"vscode:prepublish": "tsc -p ./",
+		"compile": "tsc -watch -p ./",
+		"postinstall": "node ./node_modules/vscode/bin/install"
 	},
 	"devDependencies": {
-	  "@types/node": "*",
-	  "typescript": "^2.9.2",
-	  "vsce": "^1.51.0",
-	  "vscode": "^1.0.0"
+		"@types/node": "*",
+		"typescript": "^2.9.2",
+		"vsce": "^1.51.0",
+		"vscode": "^1.0.0"
 	},
 	"contributes": {
-	  "configuration": {
-		"type": "object",
-		"title": "Codam Norminette config",
-		"properties": {
-		  "codam-norminette.command": {
-			"type": "string",
-			"default": "norminette",
-			"description": "Specifies norminette command, example: > norminette -R CheckForbiddenSourceHeader < for Piscine Day00-09. \n defaults to norminette"
-		  },
-		  "codam-norminette.fileregex": {
-			"type": "string",
-			"default": "\\.[ch]$",
-			"description": "Specifies which c file to run norminette on \n defaults to \\.[ch]$"
-		  }
+		"configuration": {
+			"type": "object",
+			"title": "Codam Norminette config",
+			"properties": {
+				"codam-norminette.command": {
+					"type": "string",
+					"default": "norminette",
+					"description": "Specifies norminette command, example: > norminette -R CheckForbiddenSourceHeader < for Piscine Day00-09 \n defaults to norminette"
+				},
+				"codam-norminette.command2": {
+					"type": "string",
+					"default": "",
+					"description": "Specifies secondary norminette command, example: > python ~/norminette+/run.py < for norminette+ \n no default since not everyone has norminette+"
+				},
+				"codam-norminette.fileregex": {
+					"type": "string",
+					"default": "\\.[ch]$",
+					"description": "Specifies which c file to run norminette on \n defaults to \\.[ch]$"
+				},
+				"codam-norminette.fileregex2": {
+					"type": "string",
+					"default": "(\\.[ch])|Makefile|makefile|GNUmakefile$",
+					"description": "Specifies which files to run the secondary norminette command on \n defaults to (\\.[ch])|Makefile|makefile|GNUmakefile$"
+				}
+			}
 		}
-	  }
 	},
 	"repository": "https://github.com/thijsdejong/vscode-codam-norminette"
-  }
+}

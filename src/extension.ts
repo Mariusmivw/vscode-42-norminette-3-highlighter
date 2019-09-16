@@ -36,37 +36,59 @@ export function activate(context: vscode.ExtensionContext) {
 	}
 
 	function updateDecorations() {
-		if (!activeEditor || activeEditor.document.languageId !== "c") {
+		if (!activeEditor || (activeEditor.document.languageId !== "c" && activeEditor.document.languageId !== "makefile")) {
 			return
 		}
-
+		let command = vscode.workspace.getConfiguration('codam-norminette').get('command') as string;
+		let command2 = vscode.workspace.getConfiguration('codam-norminette').get('command2') as string;
 		let regex = vscode.workspace.getConfiguration('codam-norminette').get('fileregex') as string;
 		let pattern = RegExp(regex);
-		if(!activeEditor.document.uri.path.replace(/^.*[\\\/]/, '').match(pattern)) return;
+		let regex2 = vscode.workspace.getConfiguration('codam-norminette').get('fileregex2') as string;
+		let pattern2 = RegExp(regex2);
 
 		const errors: vscode.DecorationOptions[] = []
-		runNorminetteProccess(activeEditor.document.uri.path)
-			.then((data: Array<any>) => {
-				data.forEach(e => {
-					let range
-					let decoration
-					if (!e.col || !activeEditor.document.getWordRangeAtPosition(new vscode.Position(e.line, e.col))) {
-						range = activeEditor.document.lineAt(e.line).range
-						decoration = { range: range, hoverMessage: 'Error: **' + e.errorText + '**' }
-					}
-					else {
-						range = activeEditor.document.getWordRangeAtPosition(new vscode.Position(e.line, e.col))
-						decoration = { range: range, hoverMessage: 'Error: **' + e.errorText + '**' }
-					}
-					errors.push(decoration)
-				})
-				activeEditor.setDecorations(errorsDecoration, errors)
-			})
+		if (command && activeEditor.document.uri.path.replace(/^.*[\\\/]/, '').match(pattern)) {
+				runNorminetteProccess(activeEditor.document.uri.path, command)
+					.then((data: Array<any>) => {
+						data.forEach(e => {
+							let range
+							let decoration
+							if (!e.col || !activeEditor.document.getWordRangeAtPosition(new vscode.Position(e.line, e.col))) {
+								range = activeEditor.document.lineAt(e.line).range
+								decoration = { range: range, hoverMessage: 'Error: **' + e.errorText + '**' }
+							}
+							else {
+								range = activeEditor.document.getWordRangeAtPosition(new vscode.Position(e.line, e.col))
+								decoration = { range: range, hoverMessage: 'Error: **' + e.errorText + '**' }
+							}
+							errors.push(decoration)
+						})
+						activeEditor.setDecorations(errorsDecoration, errors)
+					})
+				}
+		if (command2 && activeEditor.document.uri.path.replace(/^.*[\\\/]/, '').match(pattern2)) {
+				runNorminetteProccess(activeEditor.document.uri.path, command2)
+					.then((data: Array<any>) => {
+						data.forEach(e => {
+							let range
+							let decoration
+							if (!e.col || !activeEditor.document.getWordRangeAtPosition(new vscode.Position(e.line, e.col))) {
+								range = activeEditor.document.lineAt(e.line).range
+								decoration = { range: range, hoverMessage: 'Error: **' + e.errorText + '**' }
+							}
+							else {
+								range = activeEditor.document.getWordRangeAtPosition(new vscode.Position(e.line, e.col))
+								decoration = { range: range, hoverMessage: 'Error: **' + e.errorText + '**' }
+							}
+							errors.push(decoration)
+						})
+						activeEditor.setDecorations(errorsDecoration, errors)
+					})
+			}
 	}
 
-	function runNorminetteProccess(filename: String) {
+	function runNorminetteProccess(filename: String, command: String) {
 		console.log(filename)
-		let command = vscode.workspace.getConfiguration('codam-norminette').get('command');
 		return new Promise((resolve, reject) => {
 			const line = []
 			const normDecrypted = []
