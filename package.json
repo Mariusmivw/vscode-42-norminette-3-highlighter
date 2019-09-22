@@ -49,8 +49,8 @@
 				},
 				"codam-norminette.fileregex2": {
 					"type": "string",
-					"default": "(\\.[ch])|Makefile|makefile|GNUmakefile$",
-					"description": "Specifies which files to run the secondary norminette command on \n defaults to (\\.[ch])|Makefile|makefile|GNUmakefile$"
+					"default": "(\\.[c])|Makefile|makefile|GNUmakefile$",
+					"description": "Specifies which files to run the secondary norminette command on \n defaults to (\\.[c])|Makefile|makefile|GNUmakefile$"
 				}
 			}
 		}
