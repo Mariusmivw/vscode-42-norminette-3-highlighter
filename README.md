@@ -13,7 +13,7 @@ Launch Quick Open with <kbd>⌘</kbd>+<kbd>P</kbd> and enter
 ext install codam-norminette
 ```
 
-If you want to integrate norminette+, check install instructions via bit.ly/norminette
+If you want to integrate `norminette+`, check install instructions via https://github.com/thijsdejong/codam-norminette-plus
 
 After installation, configure `codam-norminette.command2` in VSCode to point to norminette+ (default `python ~/norminette+/run.py`)
 
