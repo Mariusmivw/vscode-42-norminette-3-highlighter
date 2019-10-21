@@ -4,7 +4,7 @@
 
 # Codam Norminette for VSCode
 
-This extension provides is a Norminette decorator for Codam in VSCode
+This extension is a Norminette decorator for Codam in VSCode
 
 ## Install
 

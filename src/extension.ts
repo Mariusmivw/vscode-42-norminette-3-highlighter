@@ -8,6 +8,12 @@ export function activate(context: vscode.ExtensionContext) {
 		overviewRulerLane: vscode.OverviewRulerLane.Right,
 		backgroundColor: 'rgba(255,0,0,0.2)',
 	})
+	const emptyLineDecoration = vscode.window.createTextEditorDecorationType({
+		overviewRulerColor: 'red',
+		overviewRulerLane: vscode.OverviewRulerLane.Right,
+		backgroundColor: 'rgba(255,0,0,0.2)',
+		isWholeLine: true,
+	})
 
 	let activeEditor = vscode.window.activeTextEditor
 	if (activeEditor) {
@@ -33,12 +39,13 @@ export function activate(context: vscode.ExtensionContext) {
 		}
 		timeout = setTimeout(() => {
 			const errors: vscode.DecorationOptions[] = []
-			updateDecorations('', errors)
-			updateDecorations('2', errors)
+			const emptyErrors: vscode.DecorationOptions[] = []
+			updateDecorations('', errors, emptyErrors)
+			updateDecorations('2', errors, emptyErrors)
 		}, 500)
 	}
 
-	function updateDecorations(suffix: string, errors) {
+	function updateDecorations(suffix: string, errors, emptyErrors) {
 		if (!activeEditor) {
 			return
 		}
@@ -58,29 +65,39 @@ export function activate(context: vscode.ExtensionContext) {
 			data.forEach(e => {
 				let range;
 				let decoration;
-				if (
-					!e.col ||
-					!activeEditor.document.getWordRangeAtPosition(
-						new vscode.Position(e.line, e.col)
-					)
-				) {
+				if (e.errorText.search(/[Ee]mpty line/gi) != -1) {
 					range = activeEditor.document.lineAt(e.line).range;
 					decoration = {
 						range: range,
-						hoverMessage: "Error: **" + e.errorText + "**"
+						hoverMessage: "**Error:" + e.errorText + "**",
 					};
+					emptyErrors.push(decoration);
 				} else {
-					range = activeEditor.document.getWordRangeAtPosition(
-						new vscode.Position(e.line, e.col)
-					);
-					decoration = {
-						range: range,
-						hoverMessage: "Error: **" + e.errorText + "**"
-					};
+					if (
+						!e.col ||
+						!activeEditor.document.getWordRangeAtPosition(
+							new vscode.Position(e.line, e.col)
+						)
+					) {
+						range = activeEditor.document.lineAt(e.line).range;
+						decoration = {
+							range: range,
+							hoverMessage: "**Error:" + e.errorText + "**"
+						};
+					} else {
+						range = activeEditor.document.getWordRangeAtPosition(
+							new vscode.Position(e.line, e.col)
+						);
+						decoration = {
+							range: range,
+							hoverMessage: "**Error:" + e.errorText + "**"
+						};
+					}
+					errors.push(decoration);
 				}
-				errors.push(decoration);
 			});
 			activeEditor.setDecorations(errorsDecoration, errors);
+			activeEditor.setDecorations(emptyLineDecoration, emptyErrors);
 		}
 	}
 
