@@ -27,8 +27,8 @@ export function activate(context: vscode.ExtensionContext) {
 		}
 	}, null, context.subscriptions)
 
-	vscode.workspace.onDidChangeTextDocument(event => {
-		if (activeEditor && event.document === activeEditor.document) {
+	vscode.workspace.onDidSaveTextDocument(document => {
+		if (activeEditor && document === activeEditor.document) {
 			triggerUpdateDecorations()
 		}
 	}, null, context.subscriptions)
@@ -42,7 +42,7 @@ export function activate(context: vscode.ExtensionContext) {
 			const emptyErrors: vscode.DecorationOptions[] = []
 			updateDecorations('', errors, emptyErrors)
 			updateDecorations('2', errors, emptyErrors)
-		}, 500)
+		}, 1000)
 	}
 
 	function updateDecorations(suffix: string, errors, emptyErrors) {
@@ -102,11 +102,10 @@ export function activate(context: vscode.ExtensionContext) {
 	}
 
 	function runNorminetteProccess(filename: String, command: String) {
-		console.log(filename)
 		return new Promise((resolve, reject) => {
 			const line = []
 			const normDecrypted = []
-			const proc = exec(command + " " + filename, function (error, stdout, stderr) {
+			const proc = exec(command + " '" + filename + "'", function (error, stdout, stderr) {
 				stdout.split('\n').forEach((e, i) => {
 					if (i == 0)
 						return;
