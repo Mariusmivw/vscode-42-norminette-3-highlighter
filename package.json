@@ -3,7 +3,7 @@
 	"displayName": "Codam Norminette 3",
 	"description": "Codam Norminette decorator for VSCode",
 	"version": "4.2.0",
-	"publisher": "Marius van Wijk, Joppe Koers",
+	"publisher": "MariusvanWijk-JoppeKoers",
 	"license": "MIT",
 	"engines": {
 		"vscode": "^1.6.0"
