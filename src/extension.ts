@@ -48,12 +48,12 @@ export function activate(context: vscode.ExtensionContext) {
 		}, 1000)
 	}
 
-	let commands = fetchCommands();
-	let patterns = fetchPatterns();
+	let commands = fetchCommands()
+	let patterns = fetchPatterns()
 	vscode.workspace.onDidChangeConfiguration((change) => {
 		if (change.affectsConfiguration('codam-norminette')) {
-			commands = fetchCommands();
-			patterns = fetchPatterns();
+			commands = fetchCommands()
+			patterns = fetchPatterns()
 		}
 	})
 
