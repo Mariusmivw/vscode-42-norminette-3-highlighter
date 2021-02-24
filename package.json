@@ -33,22 +33,22 @@
 			"type": "object",
 			"title": "Codam Norminette",
 			"properties": {
-				"codam-norminette.command0": {
+				"codam-norminette-3.command0": {
 					"type": "string",
 					"default": "norminette",
 					"description": "Specifies norminette command, example: > norminette -R CheckForbiddenSourceHeader < for Piscine Day00-09 \n defaults to norminette"
 				},
-				"codam-norminette.command1": {
+				"codam-norminette-3.command1": {
 					"type": "string",
 					"default": "",
 					"description": "[Only works if output is in norminette 3 format] Specifies secondary norminette command, example: > python ~/norminette+/run.py < for norminette+ \n no default since not everyone has norminette+"
 				},
-				"codam-norminette.fileregex0": {
+				"codam-norminette-3.fileregex0": {
 					"type": "string",
 					"default": "\\.[ch]$",
 					"description": "Specifies which c file to run norminette on \n defaults to \\.[ch]$"
 				},
-				"codam-norminette.fileregex1": {
+				"codam-norminette-3.fileregex1": {
 					"type": "string",
 					"default": "(\\.[c])|Makefile|makefile|GNUmakefile$",
 					"description": "Specifies which files to run the secondary norminette command on \n defaults to (\\.[c])|Makefile|makefile|GNUmakefile$"

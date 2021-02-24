@@ -2,17 +2,23 @@ import * as vscode from 'vscode'
 import { applyDecorations } from './decorations'
 import { execNorminette } from './norminette'
 
+function getConfig() {
+	return vscode.workspace.getConfiguration('codam-norminette-3')
+}
+
 function fetchCommands() {
+	const config = getConfig()
 	return [
-		vscode.workspace.getConfiguration('codam-norminette').get(`command0`) as string,
-		vscode.workspace.getConfiguration('codam-norminette').get(`command1`) as string,
+		config.get(`command0`) as string,
+		config.get(`command1`) as string,
 	]
 }
 
 function fetchPatterns() {
+	const config = getConfig()
 	return [
-		RegExp(vscode.workspace.getConfiguration('codam-norminette').get(`fileregex0`)),
-		RegExp(vscode.workspace.getConfiguration('codam-norminette').get(`fileregex1`)),
+		RegExp(config.get(`fileregex0`)),
+		RegExp(config.get(`fileregex1`)),
 	]
 }
 
@@ -45,13 +51,13 @@ export function activate(context: vscode.ExtensionContext) {
 			const emptyErrors: vscode.DecorationOptions[] = []
 			updateDecorations(0, errors, emptyErrors)
 			updateDecorations(1, errors, emptyErrors)
-		}, 1000)
+		}, 500)
 	}
 
 	let commands = fetchCommands()
 	let patterns = fetchPatterns()
 	vscode.workspace.onDidChangeConfiguration((change) => {
-		if (change.affectsConfiguration('codam-norminette')) {
+		if (change.affectsConfiguration('codam-norminette-3')) {
 			commands = fetchCommands()
 			patterns = fetchPatterns()
 		}
