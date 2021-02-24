@@ -5,7 +5,7 @@
 # 42 Norminette V3.x for VSCode
 
 This extension is a Norminette (version 3.x) decorator for 42 in VSCode
-
+![example](example.gif)
 ## Install
 
 Launch Quick Open with <kbd>⌘</kbd>+<kbd>P</kbd> and enter
@@ -20,7 +20,7 @@ If there are changes to the file, the norm is automatically checked on save
 
 ## Configuration
 
-```ts
+```json
 {
   "codam-norminette-3.command0": "norminette",
   "codam-norminette-3.command1": "",
