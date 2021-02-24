@@ -1,10 +1,10 @@
 <img
-  src="https://raw.githubusercontent.com/Mariusmivw/vscode-codam-norminette-3/master/codam.png"
+  src="https://raw.githubusercontent.com/Mariusmivw/vscode-42-norminette-3-highlighter/master/42.png"
   width=128>
 
-# Codam Norminette V3.x for VSCode
+# 42 Norminette V3.x for VSCode
 
-This extension is a Norminette (version 3.x) decorator for Codam in VSCode
+This extension is a Norminette (version 3.x) decorator for 42 in VSCode
 
 ## Install
 
@@ -22,16 +22,16 @@ If there are changes to the file, the norm is automatically checked on save
 
 ```ts
 {
-  "codam-norminette.command0": "norminette",
-  "codam-norminette.command1": "",
-  "codam-norminette.fileregex0": "\\.[ch]$",
-  "codam-norminette.fileregex1": "(\\.[c])|Makefile|makefile|GNUmakefile$"
+  "codam-norminette-3.command0": "norminette",
+  "codam-norminette-3.command1": "",
+  "codam-norminette-3.fileregex0": "\\.[ch]$",
+  "codam-norminette-3.fileregex1": "(\\.[c])|Makefile|makefile|GNUmakefile$"
 }
 ```
 
 ## Issues
 
-To report a bug or ask for a feature, please open a [Github issue](https://github.com/Mariusmivw/vscode-codam-norminette-3/issues)
+To report a bug or ask for a feature, please open a [Github issue](https://github.com/Mariusmivw/vscode-42-norminette-3-highlighter/issues)
 
 
 ## License

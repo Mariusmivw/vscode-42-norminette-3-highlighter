@@ -1,7 +1,7 @@
 {
 	"name": "codam-norminette-3",
-	"displayName": "Codam Norminette 3",
-	"description": "Codam Norminette decorator for VSCode",
+	"displayName": "42 Norminette Highlighter (3.x)",
+	"description": "42 Norminette decorator for VSCode",
 	"version": "4.2.0",
 	"publisher": "MariusvanWijk-JoppeKoers",
 	"license": "MIT",
@@ -14,8 +14,8 @@
 	"activationEvents": [
 		"*"
 	],
-	"repository": "https://github.com/Mariusmivw/vscode-codam-norminette",
-	"icon": "codam.png",
+	"repository": "https://github.com/Mariusmivw/vscode-42-norminette-3-highlighter",
+	"icon": "42.png",
 	"main": "./out/extension",
 	"scripts": {
 		"vscode:prepublish": "tsc -p ./",
@@ -31,7 +31,7 @@
 	"contributes": {
 		"configuration": {
 			"type": "object",
-			"title": "Codam Norminette",
+			"title": "42 Norminette",
 			"properties": {
 				"codam-norminette-3.command0": {
 					"type": "string",
