@@ -32,8 +32,8 @@ help:
 
 publish:
 	cd ..
-	$(VSCE) publish
-	$(OVSC) publish -p $(VSX_TOKEN)
+	echo "$(VSC_TOKEN)" | $(VSCE) publish
+	$(OVSX) publish -p $(VSX_TOKEN)
 
 compile:
 	$(NPM_RUN) vscode:prepublish
@@ -44,11 +44,11 @@ package: compile
 publish-vsc: vsc-login
 	$(VSCE) publish
 
-publish-vsx-source: package
-	$(OVSC) publish -p $(VSX_TOKEN)
+publish-vsx-source:
+	$(OVSX) publish -p $(VSX_TOKEN)
 
 publish-vsx-package:
-	$(OVSC) publish *.vsix -p $(VSX_TOKEN)
+	$(OVSX) publish *.vsix -p $(VSX_TOKEN)
 
 vsc-login:
 	echo "$(VSC_TOKEN)" | $(VSCE) login $(NAMESPACE)
