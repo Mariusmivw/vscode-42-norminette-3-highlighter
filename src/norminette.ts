@@ -1,6 +1,14 @@
 import { exec } from 'child_process'
 
-function normDecrypt(normLine: String) {
+export type NormInfo = {
+	fullText: string,
+	error: string,
+	line: number,
+	col: number,
+	errorText: string
+}
+
+function normDecrypt(normLine: string): NormInfo {
 	const [fullText, error, line, col, errorText] = normLine.match(/\s*([A-Z_]*)\s*\(line:\s*(\d*),\s*col:\s*(\d+)\):\s*(.*)/)
 
 	return {
@@ -12,10 +20,10 @@ function normDecrypt(normLine: String) {
 	}
 }
 
-export function execNorminette(filename: String, command: String) {
-	return new Promise((resolve, reject) => {
-		const line = []
-		const normDecrypted = []
+export function execNorminette(filename: string, command: string) {
+	return new Promise<NormInfo[]>((resolve, reject) => {
+		const line: string[] = []
+		const normDecrypted: NormInfo[] = []
 		const proc = exec(`${command} '${filename}'`, (error, stdout, stderr) => {
 			stdout.split('\n').forEach((e, i) => {
 				if (i == 0)

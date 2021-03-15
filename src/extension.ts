@@ -63,7 +63,7 @@ export function activate(context: vscode.ExtensionContext) {
 		}
 	})
 
-	async function updateDecorations(index: number, errors, emptyErrors) {
+	async function updateDecorations(index: number, errors: vscode.DecorationOptions[], emptyErrors: vscode.DecorationOptions[]) {
 		if (!activeEditor) {
 			return
 		}

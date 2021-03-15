@@ -1,4 +1,5 @@
 import * as vscode from 'vscode'
+import { NormInfo } from './norminette'
 
 const errors = vscode.window.createTextEditorDecorationType({
 	overviewRulerColor: 'red',
@@ -18,7 +19,7 @@ const decorations = {
 	emptyLine,
 }
 
-function isEmptyLineError(line :string)
+function isEmptyLineError(line: string)
 {
 	const emptyLineErrors = [
 		'SPACE_EMPTY_LINE',
@@ -28,8 +29,7 @@ function isEmptyLineError(line :string)
 		'EMPTY_LINE_EOF',
 		'CONSECUTIVE_NEWLINES',
 	]
-	for (const lineError of emptyLineErrors)
-	{
+	for (const lineError of emptyLineErrors) {
 		if (line.includes(lineError)) {
 			return true
 		}
@@ -37,7 +37,7 @@ function isEmptyLineError(line :string)
 	return false
 }
 
-export function applyDecorations(data, errors, emptyErrors, activeEditor) {
+export function applyDecorations(data: NormInfo[], errors: vscode.DecorationOptions[], emptyErrors: vscode.DecorationOptions[], activeEditor: vscode.TextEditor) {
 	data.forEach((e) => {
 		const decoration = {
 			range: null,
