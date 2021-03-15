@@ -18,13 +18,32 @@ const decorations = {
 	emptyLine,
 }
 
+function isEmptyLineError(line :string)
+{
+	const emptyLineErrors = [
+		'SPACE_EMPTY_LINE',
+		'EMPTY_LINE_FUNCTION',
+		'EMPTY_LINE_FILE_START',
+		'EMPTY_LINE_FUNCTION',
+		'EMPTY_LINE_EOF',
+		'CONSECUTIVE_NEWLINES',
+	]
+	for (const lineError of emptyLineErrors)
+	{
+		if (line.includes(lineError)) {
+			return true
+		}
+	}
+	return false
+}
+
 export function applyDecorations(data, errors, emptyErrors, activeEditor) {
 	data.forEach((e) => {
 		const decoration = {
 			range: null,
 			hoverMessage: `**Error: ${e.errorText}**`,
 		}
-		if (e.errorText.search(/empty line/i) != -1) {
+		if (isEmptyLineError(e.errorText)) {
 			decoration.range = activeEditor.document.lineAt(e.line).range;
 			emptyErrors.push(decoration)
 		}
@@ -40,4 +59,3 @@ export function applyDecorations(data, errors, emptyErrors, activeEditor) {
 	activeEditor.setDecorations(decorations.errors, errors)
 	activeEditor.setDecorations(decorations.emptyLine, emptyErrors)
 }
-
