@@ -43,16 +43,19 @@ export function applyDecorations(data, errors, emptyErrors, activeEditor) {
 			range: null,
 			hoverMessage: `**Error: ${e.errorText}**`,
 		}
-		if (isEmptyLineError(e.errorText)) {
-			decoration.range = activeEditor.document.lineAt(e.line).range;
+		const line = activeEditor.document.lineAt(e.line)
+		const offsetByTabs = (line.text.split('\t').length - 1) * 3
+		const wordRangeAtPosition = activeEditor.document.getWordRangeAtPosition(new vscode.Position(e.line, e.col - offsetByTabs))
+		if (isEmptyLineError(e.error)) {
+			decoration.range = line.range;
 			emptyErrors.push(decoration)
 		}
-		else if (!e.col || !activeEditor.document.getWordRangeAtPosition(new vscode.Position(e.line, e.col))) {
-			decoration.range = activeEditor.document.lineAt(e.line).range,
+		else if (!e.col || !wordRangeAtPosition) {
+			decoration.range = line.range,
 			errors.push(decoration)
 		}
 		else {
-			decoration.range = activeEditor.document.getWordRangeAtPosition(new vscode.Position(e.line, e.col))
+			decoration.range = wordRangeAtPosition
 			errors.push(decoration)
 		}
 	})
