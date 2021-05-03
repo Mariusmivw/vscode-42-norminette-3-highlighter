@@ -8,7 +8,10 @@ This extension is a Norminette (version 3.x) decorator for 42 in VSCode
 ![example](example.gif)
 ## Install
 
-Launch Quick Open with <kbd>⌘</kbd>+<kbd>P</kbd> and enter
+This extension can be found at:
+[The VSCode Marketplace](https://marketplace.visualstudio.com/items?itemName=MariusvanWijk-JoppeKoers.codam-norminette-3) and [The OpenVSX Marketplace](https://open-vsx.org/extension/MariusvanWijk-JoppeKoers/codam-norminette-3)
+
+Or launch Quick Open with <kbd>⌘</kbd>+<kbd>P</kbd> and enter
 ```
 ext install codam-norminette-3
 ```
