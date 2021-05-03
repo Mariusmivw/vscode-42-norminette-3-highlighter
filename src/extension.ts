@@ -72,7 +72,10 @@ export function activate(context: vscode.ExtensionContext) {
 		if (!command || !patterns[index].test(filename)) {
 			return
 		}
+
 		const data = await execNorminette(activeEditor.document.uri.path, command)
-		applyDecorations(data, errors, emptyErrors, activeEditor)
+		if (data){
+			applyDecorations(data, errors, emptyErrors, activeEditor)
+		}
 	}
 }

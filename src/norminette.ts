@@ -20,7 +20,7 @@ function normDecrypt(normLine: string): NormInfo {
 	}
 }
 
-export function execNorminette(filename: string, command: string) {
+export function execNorminette(filename: string, command: string):Promise <NormInfo[] | null> {
 	return new Promise<NormInfo[]>((resolve, reject) => {
 		const line: string[] = []
 		const normDecrypted: NormInfo[] = []
@@ -39,7 +39,10 @@ export function execNorminette(filename: string, command: string) {
 				})
 				// console.log(normDecrypted)
 				resolve(normDecrypted)
-			} catch (e) {
+			}
+			catch (e) {
+				resolve(null)
+				// console.log('error')
 				// console.log(e)
 			}
 		})

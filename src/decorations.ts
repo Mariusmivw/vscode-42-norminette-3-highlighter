@@ -37,6 +37,22 @@ function isEmptyLineError(line: string)
 	return false
 }
 
+function getTabOffset(text: String, col: Number)
+{
+	const tabSplit = text.split('\t')
+	let len = 0
+	let tabOffset = 0
+	for (const part of tabSplit)
+	{
+		len += part.length
+		if (len + tabOffset >= col)
+			return tabOffset
+		tabOffset += 4 - (len % 4);
+		if (len + tabOffset >= col)
+			return tabOffset
+	}
+}
+
 export function applyDecorations(data: NormInfo[], errors: vscode.DecorationOptions[], emptyErrors: vscode.DecorationOptions[], activeEditor: vscode.TextEditor) {
 	data.forEach((e) => {
 		const decoration = {
@@ -44,8 +60,8 @@ export function applyDecorations(data: NormInfo[], errors: vscode.DecorationOpti
 			hoverMessage: `**Error: ${e.errorText}**`,
 		}
 		const line = activeEditor.document.lineAt(e.line)
-		const offsetByTabs = (line.text.split('\t').length - 1) * 3
-		const wordRangeAtPosition = activeEditor.document.getWordRangeAtPosition(new vscode.Position(e.line, e.col - offsetByTabs))
+		const tabOffset = getTabOffset(line.text, e.col);
+		const wordRangeAtPosition = activeEditor.document.getWordRangeAtPosition(new vscode.Position(e.line, e.col - tabOffset))
 		if (isEmptyLineError(e.error)) {
 			decoration.range = line.range;
 			emptyErrors.push(decoration)
