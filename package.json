@@ -2,7 +2,7 @@
 	"name": "codam-norminette-3",
 	"displayName": "42 Norminette Highlighter (3.x)",
 	"description": "42 Norminette decorator for VSCode",
-	"version": "4.2.5",
+	"version": "4.3.0",
 	"publisher": "MariusvanWijk-JoppeKoers",
 	"license": "MIT",
 	"engines": {
@@ -28,6 +28,20 @@
 		"vsce": "^1.85.0"
 	},
 	"contributes": {
+		"commands": [
+			{
+				"command": "codam-norminette-3.enable",
+				"title": "Norminette Highlighter: Enable"
+			},
+			{
+				"command": "codam-norminette-3.disable",
+				"title": "Norminette Highlighter: Disable"
+			},
+			{
+				"command": "codam-norminette-3.toggle",
+				"title": "Norminette Highlighter: Toggle"
+			}
+		],
 		"configuration": {
 			"type": "object",
 			"title": "42 Norminette",

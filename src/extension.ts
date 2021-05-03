@@ -1,5 +1,5 @@
 import * as vscode from 'vscode'
-import { applyDecorations } from './decorations'
+import { applyDecorations, clearDecorations } from './decorations'
 import { execNorminette } from './norminette'
 
 function getConfig() {
@@ -42,10 +42,12 @@ export function activate(context: vscode.ExtensionContext) {
 	}, null, context.subscriptions)
 
 	let timeout = undefined
+	let enabled = true
 	function triggerUpdateDecorations() {
 		if (timeout) {
 			clearTimeout(timeout)
 		}
+		if (!enabled) return
 		timeout = setTimeout(() => {
 			const errors: vscode.DecorationOptions[] = []
 			const emptyErrors: vscode.DecorationOptions[] = []
@@ -74,8 +76,26 @@ export function activate(context: vscode.ExtensionContext) {
 		}
 
 		const data = await execNorminette(activeEditor.document.uri.path, command)
-		if (data){
+		if (data) {
 			applyDecorations(data, errors, emptyErrors, activeEditor)
 		}
+	}
+
+	const cmds = {
+		'enable': () => {
+			enabled = true
+			triggerUpdateDecorations()
+		},
+		'disable': () => {
+			enabled = false
+			clearDecorations(activeEditor)
+		},
+		'toggle': () => {
+			if (enabled) cmds.disable()
+			else cmds.enable()
+		},
+	}
+	for (const cmd in cmds) {
+		context.subscriptions.push(vscode.commands.registerCommand(`codam-norminette-3.${cmd}`, cmds[cmd]));
 	}
 }

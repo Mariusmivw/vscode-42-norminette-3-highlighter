@@ -19,8 +19,7 @@ const decorations = {
 	emptyLine,
 }
 
-function isEmptyLineError(line: string)
-{
+function isEmptyLineError(line: string) {
 	const emptyLineErrors = [
 		'SPACE_EMPTY_LINE',
 		'EMPTY_LINE_FUNCTION',
@@ -37,13 +36,11 @@ function isEmptyLineError(line: string)
 	return false
 }
 
-function getTabOffset(text: String, col: Number)
-{
+function getTabOffset(text: String, col: Number) {
 	const tabSplit = text.split('\t')
 	let len = 0
 	let tabOffset = 0
-	for (const part of tabSplit)
-	{
+	for (const part of tabSplit) {
 		len += part.length
 		if (len + tabOffset >= col)
 			return tabOffset
@@ -68,7 +65,7 @@ export function applyDecorations(data: NormInfo[], errors: vscode.DecorationOpti
 		}
 		else if (!e.col || !wordRangeAtPosition) {
 			decoration.range = line.range,
-			errors.push(decoration)
+				errors.push(decoration)
 		}
 		else {
 			decoration.range = wordRangeAtPosition
@@ -77,4 +74,9 @@ export function applyDecorations(data: NormInfo[], errors: vscode.DecorationOpti
 	})
 	activeEditor.setDecorations(decorations.errors, errors)
 	activeEditor.setDecorations(decorations.emptyLine, emptyErrors)
+}
+
+export function clearDecorations(activeEditor: vscode.TextEditor) {
+	activeEditor.setDecorations(decorations.errors, [])
+	activeEditor.setDecorations(decorations.emptyLine, [])
 }

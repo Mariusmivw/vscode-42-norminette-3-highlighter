@@ -20,6 +20,8 @@ ext install codam-norminette-3
 
 If there are changes to the file, the norm is automatically checked on save
 
+To enable or disable the highlighter you can press <kbd>Shift</kbd>+<kbd>⌘</kbd>+<kbd>P</kbd>
+![enable|disable|toggle](enable.gif)
 
 ## Configuration
 
