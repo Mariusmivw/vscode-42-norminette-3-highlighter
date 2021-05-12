@@ -1,25 +1,21 @@
 import * as vscode from 'vscode'
 import { NormInfo } from './norminette'
 
-const errors = vscode.window.createTextEditorDecorationType({
-	overviewRulerColor: 'red',
-	overviewRulerLane: vscode.OverviewRulerLane.Right,
-	backgroundColor: 'rgba(255,0,0,0.2)',
-})
-
-const emptyLine = vscode.window.createTextEditorDecorationType({
-	overviewRulerColor: 'red',
-	overviewRulerLane: vscode.OverviewRulerLane.Right,
-	backgroundColor: 'rgba(255,0,0,0.2)',
-	isWholeLine: true,
-})
-
 const decorations = {
-	errors,
-	emptyLine,
+	errors: vscode.window.createTextEditorDecorationType({
+		overviewRulerColor: 'red',
+		overviewRulerLane: vscode.OverviewRulerLane.Right,
+		backgroundColor: 'rgba(255,0,0,0.2)',
+	}),
+	emptyLine: vscode.window.createTextEditorDecorationType({
+		overviewRulerColor: 'red',
+		overviewRulerLane: vscode.OverviewRulerLane.Right,
+		backgroundColor: 'rgba(255,0,0,0.2)',
+		isWholeLine: true,
+	}),
 }
 
-function isEmptyLineError(line: string) {
+function isEmptyLineError(line: string): boolean {
 	const emptyLineErrors = [
 		'SPACE_EMPTY_LINE',
 		'EMPTY_LINE_FUNCTION',
@@ -29,54 +25,57 @@ function isEmptyLineError(line: string) {
 		'CONSECUTIVE_NEWLINES',
 	]
 	for (const lineError of emptyLineErrors) {
-		if (line.includes(lineError)) {
+		if (line.includes(lineError))
 			return true
-		}
 	}
 	return false
 }
 
-function getTabOffset(text: String, col: Number) {
-	const tabSplit = text.split('\t')
-	let len = 0
-	let tabOffset = 0
+function getTabOffset(text: string, col: number): number {
+	const tabSplit: string[] = text.split('\t')
+	let len: number = 0
+	let tabOffset: number = 0
 	for (const part of tabSplit) {
 		len += part.length
 		if (len + tabOffset >= col)
 			return tabOffset
-		tabOffset += 4 - (len % 4);
+		tabOffset += 4 - (len % 4)
 		if (len + tabOffset >= col)
 			return tabOffset
 	}
+	return tabOffset
 }
 
-export function applyDecorations(data: NormInfo[], errors: vscode.DecorationOptions[], emptyErrors: vscode.DecorationOptions[], activeEditor: vscode.TextEditor) {
-	data.forEach((e) => {
+export function applyDecorations(normInfos: NormInfo[], editor: vscode.TextEditor) {
+	const errors: vscode.DecorationOptions[] = []
+	const emptyErrors: vscode.DecorationOptions[] = []
+
+	normInfos.forEach((e) => {
 		const decoration = {
 			range: null,
 			hoverMessage: `**Error: ${e.errorText}**`,
 		}
-		const line = activeEditor.document.lineAt(e.line)
-		const tabOffset = getTabOffset(line.text, e.col);
-		const wordRangeAtPosition = activeEditor.document.getWordRangeAtPosition(new vscode.Position(e.line, e.col - tabOffset))
+		const line: vscode.TextLine = editor.document.lineAt(e.line)
+		const tabOffset: number = getTabOffset(line.text, e.col)
+		const wordRangeAtPosition: vscode.Range = editor.document.getWordRangeAtPosition(new vscode.Position(e.line, e.col - tabOffset))
 		if (isEmptyLineError(e.error)) {
-			decoration.range = line.range;
+			decoration.range = line.range
 			emptyErrors.push(decoration)
 		}
 		else if (!e.col || !wordRangeAtPosition) {
-			decoration.range = line.range,
-				errors.push(decoration)
+			decoration.range = line.range
+			errors.push(decoration)
 		}
 		else {
 			decoration.range = wordRangeAtPosition
 			errors.push(decoration)
 		}
 	})
-	activeEditor.setDecorations(decorations.errors, errors)
-	activeEditor.setDecorations(decorations.emptyLine, emptyErrors)
+	editor.setDecorations(decorations.errors, errors)
+	editor.setDecorations(decorations.emptyLine, emptyErrors)
 }
 
-export function clearDecorations(activeEditor: vscode.TextEditor) {
-	activeEditor.setDecorations(decorations.errors, [])
-	activeEditor.setDecorations(decorations.emptyLine, [])
+export function clearDecorations(editor: vscode.TextEditor) {
+	editor.setDecorations(decorations.errors, [])
+	editor.setDecorations(decorations.emptyLine, [])
 }
