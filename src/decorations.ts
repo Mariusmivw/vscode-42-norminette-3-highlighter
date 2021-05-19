@@ -7,7 +7,7 @@ const decorations = {
 		overviewRulerLane: vscode.OverviewRulerLane.Right,
 		backgroundColor: 'rgba(255,0,0,0.2)',
 	}),
-	emptyLine: vscode.window.createTextEditorDecorationType({
+	wholeLine: vscode.window.createTextEditorDecorationType({
 		overviewRulerColor: 'red',
 		overviewRulerLane: vscode.OverviewRulerLane.Right,
 		backgroundColor: 'rgba(255,0,0,0.2)',
@@ -15,16 +15,18 @@ const decorations = {
 	}),
 }
 
-function isEmptyLineError(line: string): boolean {
-	const emptyLineErrors = [
+function decorateWholeLine(line: string): boolean {
+	const wholeLineErrors = [
 		'SPACE_EMPTY_LINE',
 		'EMPTY_LINE_FUNCTION',
 		'EMPTY_LINE_FILE_START',
 		'EMPTY_LINE_FUNCTION',
 		'EMPTY_LINE_EOF',
 		'CONSECUTIVE_NEWLINES',
+		'LINE_TOO_LONG',
+		'TOO_MANY_LINES'
 	]
-	for (const lineError of emptyLineErrors) {
+	for (const lineError of wholeLineErrors) {
 		if (line.includes(lineError))
 			return true
 	}
@@ -48,7 +50,7 @@ function getTabOffset(text: string, col: number): number {
 
 export function applyDecorations(normInfos: NormInfo[], editor: vscode.TextEditor) {
 	const errors: vscode.DecorationOptions[] = []
-	const emptyErrors: vscode.DecorationOptions[] = []
+	const wholeLineErrors: vscode.DecorationOptions[] = []
 
 	normInfos.forEach((e) => {
 		const decoration = {
@@ -58,9 +60,9 @@ export function applyDecorations(normInfos: NormInfo[], editor: vscode.TextEdito
 		const line: vscode.TextLine = editor.document.lineAt(e.line)
 		const tabOffset: number = getTabOffset(line.text, e.col)
 		const wordRangeAtPosition: vscode.Range = editor.document.getWordRangeAtPosition(new vscode.Position(e.line, e.col - tabOffset))
-		if (isEmptyLineError(e.error)) {
+		if (decorateWholeLine(e.error)) {
 			decoration.range = line.range
-			emptyErrors.push(decoration)
+			wholeLineErrors.push(decoration)
 		}
 		else if (!e.col || !wordRangeAtPosition) {
 			decoration.range = line.range
@@ -72,10 +74,10 @@ export function applyDecorations(normInfos: NormInfo[], editor: vscode.TextEdito
 		}
 	})
 	editor.setDecorations(decorations.errors, errors)
-	editor.setDecorations(decorations.emptyLine, emptyErrors)
+	editor.setDecorations(decorations.wholeLine, wholeLineErrors)
 }
 
 export function clearDecorations(editor: vscode.TextEditor) {
 	editor.setDecorations(decorations.errors, [])
-	editor.setDecorations(decorations.emptyLine, [])
+	editor.setDecorations(decorations.wholeLine, [])
 }
