@@ -27,10 +27,8 @@ To enable or disable the highlighter you can press <kbd>Shift</kbd>+<kbd>⌘</kb
 
 ```json
 {
-  "codam-norminette-3.command0": "norminette",
-  "codam-norminette-3.command1": "",
-  "codam-norminette-3.fileregex0": "\\.[ch]$",
-  "codam-norminette-3.fileregex1": "(\\.[c])|Makefile|makefile|GNUmakefile$"
+	"codam-norminette-3.command0": "norminette",
+	"codam-norminette-3.fileregex0": "\\.[ch]$",
 }
 ```
 
