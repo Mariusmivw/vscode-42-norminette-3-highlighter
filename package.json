@@ -15,7 +15,7 @@
 		"*"
 	],
 	"repository": "https://github.com/Mariusmivw/vscode-42-norminette-3-highlighter",
-	"icon": "42.png",
+	"icon": "img/42.png",
 	"main": "./out/extension",
 	"scripts": {
 		"vscode:prepublish": "tsc -p ./",

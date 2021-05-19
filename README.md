@@ -1,11 +1,11 @@
 <img
-  src="https://raw.githubusercontent.com/Mariusmivw/vscode-42-norminette-3-highlighter/master/42.png"
+  src="https://raw.githubusercontent.com/Mariusmivw/vscode-42-norminette-3-highlighter/master/img/42.png"
   width=128>
 
 # 42 Norminette V3.x for VSCode
 
 This extension is a Norminette (version 3.x) decorator for 42 in VSCode
-![example](example.gif)
+![example](img/example.gif)
 ## Install
 
 This extension can be found at:
@@ -21,7 +21,7 @@ ext install codam-norminette-3
 If there are changes to the file, the norm is automatically checked on save
 
 To enable or disable the highlighter you can press <kbd>Shift</kbd>+<kbd>⌘</kbd>+<kbd>P</kbd>
-![enable|disable|toggle](enable.gif)
+![enable|disable|toggle](img/enable.gif)
 
 ## Configuration
 
