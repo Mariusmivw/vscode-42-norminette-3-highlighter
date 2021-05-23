@@ -59,5 +59,8 @@
 				}
 			}
 		}
+	},
+	"dependencies": {
+		"ignore": "^5.1.8"
 	}
 }
