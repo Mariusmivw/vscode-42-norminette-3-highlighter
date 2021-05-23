@@ -7,11 +7,11 @@ function getConfig(): vscode.WorkspaceConfiguration {
 }
 
 function fetchCommand(): string {
-	return getConfig().get(`command0`) as string
+	return getConfig().get(`command`) as string
 }
 
 function fetchPattern(): RegExp {
-	return new RegExp(getConfig().get(`regex0`) as string)
+	return new RegExp(getConfig().get(`regex`) as string)
 }
 
 async function updateDecorations(editor: vscode.TextEditor, command: string, pattern: RegExp) {
