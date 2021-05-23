@@ -5,17 +5,27 @@ export function parseBrackets(text: string | Buffer): vscode.Range[] {
 		text = text.toString()
 	const lines = text.split('\n')
 	const bracketPairs: vscode.Range[] = []
-	let endPos: [col: number, line: number] | false = [0, 0]
-	while (endPos != false)
-		endPos = skipBrackets(endPos[0], endPos[1], lines, bracketPairs)
+	let endPos = new vscode.Position(0, 0)
+	while (endPos != null)
+		endPos = skipBrackets(endPos, lines, bracketPairs)
 	return bracketPairs
 }
 
-function skipBrackets(index: number, lineIndex: number, lines: string[], bracketPairs: vscode.Range[]): [col: number, line: number] | false {
+export function findMatchingBracket(bracketPos: vscode.Position, bracketPairs: vscode.Range[]): vscode.Position {
+	for (const bracketPair of bracketPairs)
+	{
+		if (bracketPair.start.isEqual(bracketPos))
+			return bracketPair.end
+		if (bracketPair.end.isEqual(bracketPos))
+			return bracketPair.start
+	}
+}
+
+function skipBrackets(startPos: vscode.Position, lines: string[], bracketPairs: vscode.Range[]): vscode.Position {
 	let hasStartBracket = false
 	let startBracket: vscode.Position
-	lines[lineIndex] = lines[lineIndex].slice(index)
-	for (let i = lineIndex; i < lines.length; i++) {
+	lines[startPos.line] = lines[startPos.line].slice(startPos.character)
+	for (let i = startPos.line; i < lines.length; i++) {
 		let line = lines[i]
 		if (line.length == 0)
 			continue
@@ -39,7 +49,7 @@ function skipBrackets(index: number, lineIndex: number, lines: string[], bracket
 		let bracketIndex: number = hasStartBracket ? line.indexOf('}') : bracketOpenIndex
 
 		if (earliestInterruptor >= 0 && (earliestInterruptor < bracketIndex || bracketIndex < 0)) {
-			let skipPos: [col: number, line: number] | false = false
+			let skipPos: vscode.Position = null
 			if (earliestInterruptor == singleCommentIndex)
 				continue
 			if (earliestInterruptor == multiCommentIndex)
@@ -49,57 +59,55 @@ function skipBrackets(index: number, lineIndex: number, lines: string[], bracket
 			else if (earliestInterruptor == singleQuoteIndex)
 				skipPos = skipSingleQuote(singleQuoteIndex, i, lines)
 			else if (earliestInterruptor == bracketOpenIndex)
-				skipPos = skipBrackets(bracketOpenIndex, i, lines, bracketPairs)
-			if (skipPos == false)
+				skipPos = skipBrackets(new vscode.Position(i, bracketOpenIndex), lines, bracketPairs)
+			if (skipPos == null)
 				break
-			lines[skipPos[1]] = line.slice(skipPos[0])
-			i = skipPos[1] - 1
+			lines[skipPos.line] = line.slice(skipPos.character)
+			i = skipPos.line - 1
 			continue
 		}
 
 		if (bracketIndex >= 0) {
-			if (i == lineIndex)
-				bracketIndex += index
+			if (i == startPos.line)
+				bracketIndex += startPos.character
 			if (hasStartBracket) {
 				bracketPairs.push(new vscode.Range(startBracket, new vscode.Position(i, bracketIndex)))
-				return [bracketIndex + 1, i]
+				return new vscode.Position(i, bracketIndex + 1)
 			}
 			startBracket = new vscode.Position(i, bracketIndex)
 			hasStartBracket = true
 		}
 	}
-	return false
+	return null
 }
 
-function skipMultiComment(index: number, lineIndex: number, lines: string[]): [col: number, line: number] | false {
+function skipMultiComment(index: number, lineIndex: number, lines: string[]): vscode.Position {
 	let endIndex = lines[lineIndex].slice(index + 2).indexOf('*/')
 	if (endIndex >= 0)
-		return [index + 2 + endIndex + 2, lineIndex]
+		return new vscode.Position(lineIndex, index + 2 + endIndex + 2)
 	for (let i = lineIndex + 1; i < lines.length; i++) {
 		endIndex = lines[lineIndex].indexOf('*/')
 		if (endIndex >= 0)
-			return [endIndex + 2, lineIndex]
+			return new vscode.Position(lineIndex, endIndex + 2)
 	}
-	return false
+	return null
 }
 
-function skipDoubleQuote(index: number, lineIndex: number, lines: string[]): [col: number, line: number] | false {
+function skipDoubleQuote(index: number, lineIndex: number, lines: string[]): vscode.Position {
 	const skipPos = skipUntilUnescapedString('\"', index + 1, lineIndex, lines)
-	if (skipPos == false)
-		return false
-	skipPos[0] += 1
-	return skipPos
+	if (skipPos == null)
+		return null
+	return skipPos.translate(0, 1)
 }
 
-function skipSingleQuote(index: number, lineIndex: number, lines: string[]): [col: number, line: number] | false {
+function skipSingleQuote(index: number, lineIndex: number, lines: string[]): vscode.Position {
 	const skipPos = skipUntilUnescapedString('\'', index + 1, lineIndex, lines)
-	if (skipPos == false)
-		return false
-	skipPos[0] += 1
-	return skipPos
+	if (skipPos == null)
+		return null
+	return skipPos.translate(0, 1)
 }
 
-function skipUntilUnescapedString(str: string, index: number, lineIndex: number, lines: string[]): [col: number, line: number] | false {
+function skipUntilUnescapedString(str: string, index: number, lineIndex: number, lines: string[]): vscode.Position {
 	let endIndex = -1
 	do {
 		index += endIndex + 1
@@ -107,11 +115,11 @@ function skipUntilUnescapedString(str: string, index: number, lineIndex: number,
 	} while (endIndex >= 0 && lines[lineIndex][index + endIndex - 1] == '\\' && lines[lineIndex][index + endIndex - 2] != '\\')
 
 	if (endIndex >= 0)
-		return [endIndex + index, lineIndex]
+		return new vscode.Position(lineIndex, endIndex + index)
 	for (let i = lineIndex + 1; i < lines.length; i++) {
 		endIndex = lines[lineIndex].indexOf(str)
 		if (endIndex >= 0)
-			return [endIndex, lineIndex]
+			return new vscode.Position(lineIndex, endIndex)
 	}
-	return false
+	return null
 }
