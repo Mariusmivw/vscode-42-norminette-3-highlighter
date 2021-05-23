@@ -1,4 +1,5 @@
 import * as vscode from 'vscode'
+import { findMatchingBracket, parseBrackets } from './brackets'
 import { NormInfo } from './norminette'
 
 const decorations = {
@@ -24,7 +25,6 @@ function decorateWholeLine(line: string): boolean {
 		'EMPTY_LINE_EOF',
 		'CONSECUTIVE_NEWLINES',
 		'LINE_TOO_LONG',
-		'TOO_MANY_LINES'
 	]
 	for (const lineError of wholeLineErrors) {
 		if (line.includes(lineError))
@@ -60,7 +60,13 @@ export function applyDecorations(normInfos: NormInfo[], editor: vscode.TextEdito
 		const line: vscode.TextLine = editor.document.lineAt(e.line)
 		const tabOffset: number = getTabOffset(line.text, e.col)
 		const wordRangeAtPosition: vscode.Range = editor.document.getWordRangeAtPosition(new vscode.Position(e.line, e.col - tabOffset))
-		if (decorateWholeLine(e.error)) {
+		if (e.error === 'TOO_MANY_LINES')
+		{
+			const startBracket = findMatchingBracket(new vscode.Position(e.line, e.col), parseBrackets(editor.document.getText()))
+			decoration.range = editor.document.lineAt(startBracket.line - 1).range
+			wholeLineErrors.push(decoration)
+		}
+		else if (decorateWholeLine(e.error)) {
 			decoration.range = line.range
 			wholeLineErrors.push(decoration)
 		}
