@@ -49,7 +49,7 @@
 			"properties": {
 				"codam-norminette-3.command": {
 					"type": "string",
-					"default": "$HOME/.local/bin/norminette",
+					"default": "norminette",
 					"description": "Specifies norminette command"
 				},
 				"codam-norminette-3.regex": {
