@@ -12,8 +12,7 @@ export function parseBrackets(text: string | Buffer): vscode.Range[] {
 }
 
 export function findMatchingBracket(bracketPos: vscode.Position, bracketPairs: vscode.Range[]): vscode.Position {
-	for (const bracketPair of bracketPairs)
-	{
+	for (const bracketPair of bracketPairs) {
 		if (bracketPair.start.isEqual(bracketPos))
 			return bracketPair.end
 		if (bracketPair.end.isEqual(bracketPos))
@@ -50,14 +49,15 @@ function skipBrackets(startPos: vscode.Position, lines: string[], bracketPairs: 
 
 		if (earliestInterruptor >= 0 && (earliestInterruptor < bracketIndex || bracketIndex < 0)) {
 			let skipPos: vscode.Position = null
+			const interruptorPos = new vscode.Position(i, earliestInterruptor)
 			if (earliestInterruptor == singleCommentIndex)
 				continue
 			if (earliestInterruptor == multiCommentIndex)
-				skipPos = skipMultiComment(multiCommentIndex, i, lines)
+				skipPos = skipMultiComment(interruptorPos, lines)
 			else if (earliestInterruptor == doubleQuoteIndex)
-				skipPos = skipDoubleQuote(doubleQuoteIndex, i, lines)
+				skipPos = skipDoubleQuote(interruptorPos, lines)
 			else if (earliestInterruptor == singleQuoteIndex)
-				skipPos = skipSingleQuote(singleQuoteIndex, i, lines)
+				skipPos = skipSingleQuote(interruptorPos, lines)
 			else if (earliestInterruptor == bracketOpenIndex)
 				skipPos = skipBrackets(new vscode.Position(i, bracketOpenIndex), lines, bracketPairs)
 			if (skipPos == null)
@@ -81,45 +81,46 @@ function skipBrackets(startPos: vscode.Position, lines: string[], bracketPairs: 
 	return null
 }
 
-function skipMultiComment(index: number, lineIndex: number, lines: string[]): vscode.Position {
-	let endIndex = lines[lineIndex].slice(index + 2).indexOf('*/')
+function skipMultiComment(pos: vscode.Position, lines: string[]): vscode.Position {
+	let endIndex = lines[pos.line].slice(pos.character + 2).indexOf('*/')
 	if (endIndex >= 0)
-		return new vscode.Position(lineIndex, index + 2 + endIndex + 2)
-	for (let i = lineIndex + 1; i < lines.length; i++) {
-		endIndex = lines[lineIndex].indexOf('*/')
+		return new vscode.Position(pos.line, pos.character + 2 + endIndex + 2)
+	for (let i = pos.line + 1; i < lines.length; i++) {
+		endIndex = lines[i].indexOf('*/')
 		if (endIndex >= 0)
-			return new vscode.Position(lineIndex, endIndex + 2)
+			return new vscode.Position(i, endIndex + 2)
 	}
 	return null
 }
 
-function skipDoubleQuote(index: number, lineIndex: number, lines: string[]): vscode.Position {
-	const skipPos = skipUntilUnescapedString('\"', index + 1, lineIndex, lines)
+function skipDoubleQuote(pos: vscode.Position, lines: string[]): vscode.Position {
+	const skipPos = skipUntilUnescapedString('\"', pos.translate(0, 1), lines)
 	if (skipPos == null)
 		return null
 	return skipPos.translate(0, 1)
 }
 
-function skipSingleQuote(index: number, lineIndex: number, lines: string[]): vscode.Position {
-	const skipPos = skipUntilUnescapedString('\'', index + 1, lineIndex, lines)
+function skipSingleQuote(pos: vscode.Position, lines: string[]): vscode.Position {
+	const skipPos = skipUntilUnescapedString('\'', pos.translate(0, 1), lines)
 	if (skipPos == null)
 		return null
 	return skipPos.translate(0, 1)
 }
 
-function skipUntilUnescapedString(str: string, index: number, lineIndex: number, lines: string[]): vscode.Position {
+function skipUntilUnescapedString(str: string, pos: vscode.Position, lines: string[]): vscode.Position {
 	let endIndex = -1
+	let index = pos.character
 	do {
 		index += endIndex + 1
-		endIndex = lines[lineIndex].slice(index).indexOf(str)
-	} while (endIndex >= 0 && lines[lineIndex][index + endIndex - 1] == '\\' && lines[lineIndex][index + endIndex - 2] != '\\')
+		endIndex = lines[pos.line].slice(index).indexOf(str)
+	} while (endIndex >= 0 && lines[pos.line][index + endIndex - 1] == '\\' && lines[pos.line][index + endIndex - 2] != '\\')
 
 	if (endIndex >= 0)
-		return new vscode.Position(lineIndex, endIndex + index)
-	for (let i = lineIndex + 1; i < lines.length; i++) {
-		endIndex = lines[lineIndex].indexOf(str)
+		return new vscode.Position(pos.line, endIndex + index)
+	for (let i = pos.line + 1; i < lines.length; i++) {
+		endIndex = lines[i].indexOf(str)
 		if (endIndex >= 0)
-			return new vscode.Position(lineIndex, endIndex)
+			return new vscode.Position(i, endIndex)
 	}
 	return null
 }
