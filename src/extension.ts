@@ -1,5 +1,6 @@
 import * as vscode from 'vscode'
 import { applyDecorations, clearDecorations } from './decorations'
+import { IgnoreSystem, initNormignore, isIgnored } from './normignore'
 import { execNorminette, NormInfo } from './norminette'
 
 function getConfig(): vscode.WorkspaceConfiguration {
@@ -14,11 +15,23 @@ function fetchPattern(): RegExp {
 	return new RegExp(getConfig().get(`regex`) as string)
 }
 
-async function updateDecorations(editor: vscode.TextEditor, command: string, pattern: RegExp) {
-	if (!editor) return
+let outputChannel
+export function log(msg)
+{
+	if (!outputChannel)
+		outputChannel = vscode.window.createOutputChannel('codam-norminette-3')
+	outputChannel.appendLine(msg)
+}
 
-	const filename: string = editor.document.uri.path.replace(/^.*[\\\/]/, '')
-	if (!command || !pattern.test(filename)) return
+async function updateDecorations(editor: vscode.TextEditor, command: string, pattern: RegExp, ignores: IgnoreSystem) {
+	if (!editor || !command) return
+
+	const filename: string = editor.document.uri.path.replace(/^.*[\\\/]/, '') // possibly just \/ instead of \\\/
+
+	if (!pattern.test(filename)) return
+	if (ignores && isIgnored(editor.document.uri, ignores)) return
+
+	log('not ignored')
 
 	const data: NormInfo[] = await execNorminette(editor.document.uri.path, command)
 	if (data) applyDecorations(data, editor)
@@ -28,11 +41,12 @@ export function activate(context: vscode.ExtensionContext) {
 	let enabled: boolean = true
 	let command: string = fetchCommand()
 	let pattern: RegExp = fetchPattern()
+	const ignores: IgnoreSystem = initNormignore()
 	const cmds = {
 		'enable': () => {
 			enabled = true
 			for (const editor of vscode.window.visibleTextEditors) {
-				updateDecorations(editor, command, pattern)
+				updateDecorations(editor, command, pattern, ignores)
 			}
 		},
 		'disable': () => {
@@ -73,7 +87,7 @@ export function activate(context: vscode.ExtensionContext) {
 			clearTimeout(timeout)
 		timeout = setTimeout(() => {
 			if (enabled)
-				updateDecorations(editor, command, pattern)
+				updateDecorations(editor, command, pattern, ignores)
 			else
 				clearDecorations(editor)
 		}, 500) // delay for when switching tabs fast
@@ -84,6 +98,6 @@ export function activate(context: vscode.ExtensionContext) {
 	}
 
 	for (const editor of vscode.window.visibleTextEditors) {
-		updateDecorations(editor, command, pattern)
+		updateDecorations(editor, command, pattern, ignores)
 	}
 }
