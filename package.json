@@ -50,6 +50,15 @@
 			"type": "object",
 			"title": "42 Norminette",
 			"properties": {
+				"codam-norminette-3.ignoreErrors": {
+					"type": "array",
+					"uniqueItems": true,
+					"items": {
+						"type": "string"
+					},
+					"default": [],
+					"description": "List of norminette errors to not highlight, e.g.: WRONG_SCOPE_COMMENT"
+				},
 				"codam-norminette-3.command": {
 					"type": "string",
 					"default": "norminette",

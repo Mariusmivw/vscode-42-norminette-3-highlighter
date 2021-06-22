@@ -48,11 +48,12 @@ function getTabOffset(text: string, col: number): number {
 	return tabOffset
 }
 
-export function applyDecorations(normInfos: NormInfo[], editor: vscode.TextEditor) {
+export function applyDecorations(normInfos: NormInfo[], editor: vscode.TextEditor, ignoreErrors: string[]) {
 	const errors: vscode.DecorationOptions[] = []
 	const wholeLineErrors: vscode.DecorationOptions[] = []
 
 	normInfos.forEach((e) => {
+		if (ignoreErrors.includes(e.error)) return
 		const decoration = {
 			range: null,
 			hoverMessage: `**Error: ${e.errorText}**`,

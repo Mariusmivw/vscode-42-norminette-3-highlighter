@@ -27,8 +27,12 @@ To enable or disable the highlighter you can press <kbd>Shift</kbd>+<kbd>⌘</kb
 
 ```json
 {
-	"codam-norminette-3.command0": "norminette",
-	"codam-norminette-3.fileregex0": "\\.[ch]$",
+	"codam-norminette-3.command": "norminette",
+	"codam-norminette-3.fileregex": "\\.[ch]$",
+	"codam-norminette-3.ignoreErrors": [
+		// "WRONG_SCOPE_COMMENT",
+		// "LINE_TOO_LONG"
+	]
 }
 ```
 
