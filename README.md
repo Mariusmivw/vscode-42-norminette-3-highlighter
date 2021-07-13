@@ -16,6 +16,8 @@ Or launch Quick Open with <kbd>⌘</kbd>+<kbd>P</kbd> and enter
 ext install codam-norminette-3
 ```
 
+This extension can also be installed from a VSIX package, which can be found on the [Releases page](https://github.com/Mariusmivw/vscode-42-norminette-3-highlighter/releases/latest). Open the Command Pallette (<kbd>⌘</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd>) and search for `VSIX`.
+
 ## Usage
 
 If there are changes to the file, the norm is automatically checked on save
@@ -25,7 +27,7 @@ To enable or disable the highlighter you can press <kbd>Shift</kbd>+<kbd>⌘</kb
 
 ## Configuration
 
-```json
+```json5
 {
 	"codam-norminette-3.command": "norminette",
 	"codam-norminette-3.fileregex": "\\.[ch]$",
