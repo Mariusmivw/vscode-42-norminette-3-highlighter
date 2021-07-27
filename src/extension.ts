@@ -1,4 +1,5 @@
 import * as vscode from 'vscode'
+import * as child_process from 'child_process'
 import { applyDecorations, clearDecorations } from './decorations'
 import { IgnoreSystem, initNormignore, isIgnored } from './normignore'
 import { execNorminette, NormInfo } from './norminette'
@@ -8,7 +9,16 @@ function getConfig(): vscode.WorkspaceConfiguration {
 }
 
 function fetchCommand(): string {
-	return getConfig().get(`command`) as string
+	const command = getConfig().get(`command`) as string
+	try {
+		const stdout = child_process.execSync(`${command} -v`).toString()
+		if (!(/3\.\d+\.\d+\s*$/.test(stdout)))
+			vscode.window.showErrorMessage(`Wrong version: ${stdout}, must be 3.x.x`)
+	} catch {
+		vscode.window.showErrorMessage(`Norminette: ${command} not found. Maybe try the absolute path`)
+		return null
+	}
+	return command
 }
 
 function fetchPattern(): RegExp {
@@ -19,8 +29,8 @@ function fetchIgnoreErrors(): string[] {
 	return getConfig().get(`ignoreErrors`) as string[]
 }
 
-let outputChannel
-export function log(msg)
+let outputChannel: vscode.OutputChannel
+export function log(msg: string)
 {
 	if (!outputChannel)
 		outputChannel = vscode.window.createOutputChannel('codam-norminette-3')
@@ -35,9 +45,10 @@ async function updateDecorations(editor: vscode.TextEditor, command: string, pat
 	if (!pattern.test(filename)) return
 	if (ignores && isIgnored(editor.document.uri, ignores)) return
 
-	log('not ignored')
+	log(`Executing norminette on: ${editor.document.uri.path}`)
 
 	const data: NormInfo[] = await execNorminette(editor.document.uri.path, command)
+	log(`norm info: ${JSON.stringify(data)}`)
 	if (data) applyDecorations(data, editor, ignoreErrors)
 }
 

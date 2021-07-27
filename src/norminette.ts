@@ -1,4 +1,5 @@
 import { exec } from 'child_process'
+import { log } from './extension'
 
 export type NormInfo = {
 	fullText: string,
@@ -22,20 +23,22 @@ function normDecrypt(normLine: string): NormInfo {
 
 export function execNorminette(filename: string, command: string): Promise<NormInfo[] | null> {
 	return new Promise<NormInfo[]>((resolve, reject) => {
-		const line: string[] = []
+		const lines: string[] = []
 		const normDecrypted: NormInfo[] = []
 		const proc = exec(`${command} '${filename}'`, (error, stdout, stderr) => {
-			stdout.split('\n').forEach((e, i) => {
+			stdout.split('\n').forEach((error_line, i) => {
 				if (i == 0)
 					return
-				line.push(e)
+				log(`error line: ${error_line}`)
+				lines.push(error_line)
 			})
 		})
 		proc.on('close', (exitCode) => {
 			try {
-				line.pop()
-				line.forEach((e) => {
-					normDecrypted.push(normDecrypt(e))
+				lines.pop()
+				lines.forEach((error_line) => {
+					log(`line: ${error_line}`)
+					normDecrypted.push(normDecrypt(error_line))
 				})
 				// console.log(normDecrypted)
 				resolve(normDecrypted)
