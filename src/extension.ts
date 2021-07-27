@@ -13,9 +13,9 @@ function fetchCommand(): string {
 	try {
 		const stdout = child_process.execSync(`${command} -v`).toString()
 		if (!(/3\.\d+\.\d+\s*$/.test(stdout)))
-			vscode.window.showErrorMessage(`Wrong version: ${stdout}, must be 3.x.x`)
+			vscode.window.showErrorMessage(`Nominette: wrong version: ${stdout}, must be 3.x.x.`)
 	} catch {
-		vscode.window.showErrorMessage(`Norminette: ${command} not found. Maybe try the absolute path`)
+		vscode.window.showErrorMessage(`Norminette: ${command} not found, see https://github.com/norminette for installation instructions.`)
 		return null
 	}
 	return command
