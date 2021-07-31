@@ -31,7 +31,6 @@ export function execNorminette(filename: string, command: string): Promise<NormI
 	return new Promise<NormInfo[]>((resolve, reject) => {
 		const lines: string[] = []
 		const normDecrypted: NormInfo[] = []
-		console.log('aaaaaaa')
 		const proc = exec(`${command} '${filename}'`, (error, stdout, stderr) => {
 			stdout.split('\n').forEach((error_line, i) => {
 				if (i == 0)

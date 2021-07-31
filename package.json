@@ -2,7 +2,7 @@
 	"name": "codam-norminette-3",
 	"displayName": "42 Norminette Highlighter (3.x)",
 	"description": "42 Norminette decorator for VSCode",
-	"version": "4.4.2",
+	"version": "4.4.3",
 	"publisher": "MariusvanWijk-JoppeKoers",
 	"license": "MIT",
 	"engines": {
