@@ -61,8 +61,7 @@ export function applyDecorations(normInfos: NormInfo[], editor: vscode.TextEdito
 		const line: vscode.TextLine = editor.document.lineAt(e.line)
 		const tabOffset: number = getTabOffset(line.text, e.col)
 		const wordRangeAtPosition: vscode.Range = editor.document.getWordRangeAtPosition(new vscode.Position(e.line, e.col - tabOffset))
-		if (e.error === 'TOO_MANY_LINES')
-		{
+		if (e.error === 'TOO_MANY_LINES') {
 			const startBracket = findMatchingBracket(new vscode.Position(e.line, e.col), parseBrackets(editor.document.getText()))
 			decoration.range = editor.document.lineAt(startBracket.line - 1).range
 			wholeLineErrors.push(decoration)

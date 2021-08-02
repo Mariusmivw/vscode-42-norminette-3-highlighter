@@ -4,7 +4,15 @@ import * as path from 'path'
 import * as vscode from 'vscode'
 import { log } from './extension'
 
-export type IgnoreSystem = { ignored: string[], notIgnored: string[], workspaces: { [workspace: string]: { [folder: string]: Ignore } } }
+export type IgnoreSystem = {
+	ignored: string[],
+	notIgnored: string[],
+	workspaces: {
+		[workspace: string]: {
+			[folder: string]: Ignore
+		}
+	}
+}
 
 export function initNormignore(): IgnoreSystem {
 	const ignores: IgnoreSystem = { ignored: [], notIgnored: [], workspaces: {} }

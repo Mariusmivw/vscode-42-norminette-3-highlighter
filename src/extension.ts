@@ -30,8 +30,8 @@ function fetchIgnoreErrors(): string[] {
 }
 
 let outputChannel: vscode.OutputChannel
-export function log(msg: string)
-{
+
+export function log(msg: string) {
 	if (!outputChannel)
 		outputChannel = vscode.window.createOutputChannel('codam-norminette-3')
 	outputChannel.appendLine(msg)
