@@ -9,17 +9,27 @@ function getConfig(): vscode.WorkspaceConfiguration {
 	return vscode.workspace.getConfiguration('codam-norminette-3')
 }
 
-function fetchCommand(): string {
+type CommandData = { command: string, wsl: boolean }
+function fetchCommand(): CommandData {
 	const command = getConfig().get(`command`) as string
 	try {
 		const stdout = child_process.execSync(`${command} -v`).toString()
 		if (!(/3\.\d+\.\d+\s*$/.test(stdout)))
 			vscode.window.showErrorMessage(`Nominette: wrong version: ${stdout}, must be 3.x.x.`)
 	} catch {
+		if (os.platform() == 'win32')
+		{
+			try {
+				const stdout = child_process.execSync(`wsl ${command} -v`).toString()
+				if (!(/3\.\d+\.\d+\s*$/.test(stdout)))
+					vscode.window.showErrorMessage(`Nominette: wrong version: ${stdout}, must be 3.x.x.`)
+				return {command: `wsl ${command}`, wsl: true}
+			} catch {}
+		}
 		vscode.window.showErrorMessage(`Norminette: \`${command}' not found, see https://github.com/42School/norminette for installation instructions.`)
 		return null
 	}
-	return command
+	return {command, wsl: command.startsWith('wsl ')}
 }
 
 function fetchPattern(): RegExp {
@@ -38,26 +48,31 @@ export function log(msg: string) {
 	outputChannel.appendLine(msg)
 }
 
-async function updateDecorations(editor: vscode.TextEditor, command: string, pattern: RegExp, ignores: IgnoreSystem, ignoreErrors: string[]) {
-	if (!editor || !command) return
+async function updateDecorations(editor: vscode.TextEditor, command: CommandData, pattern: RegExp, ignores: IgnoreSystem, ignoreErrors: string[]) {
+	if (!editor || !command.command) return
 
-	let filename: string = editor.document.uri.path.replace(/^.*[\\\/]/, '') // possibly just \/ instead of \\\/
+	let path = editor.document.uri.path;
 	if (os.platform() == 'win32')
-		filename = filename.slice(1); // windows ads a '/' prefix to every path so here we delete it
+	{
+		path = path.slice(1); // windows ads a '/' prefix to every path so here we delete it
+		if (command.wsl)
+			path = path.replace(/^.:/, (m: string) => `/mnt/${m.slice(0, -1).toLowerCase()}`)
+	}
+	const filename: string = path.replace(/^.*[\\\/]/, '') // possibly just \/ instead of \\\/
 
 	if (!pattern.test(filename)) return
 	if (ignores && isIgnored(editor.document.uri, ignores)) return
 
-	log(`Executing norminette on: ${filename}`)
+	log(`Executing norminette on: ${path}`)
 
-	const data: NormInfo[] = await execNorminette(filename, command)
+	const data: NormInfo[] = await execNorminette(path, command.command)
 	log(`norm info: ${JSON.stringify(data)}`)
 	if (data) applyDecorations(data, editor, ignoreErrors)
 }
 
 export function activate(context: vscode.ExtensionContext) {
 	let enabled: boolean = true
-	let command: string = fetchCommand()
+	let command: CommandData = fetchCommand()
 	let pattern: RegExp = fetchPattern()
 	let ignoreErrors: string[] = fetchIgnoreErrors()
 	const ignores: IgnoreSystem = initNormignore()
