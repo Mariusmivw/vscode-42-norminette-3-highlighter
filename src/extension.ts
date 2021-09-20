@@ -3,6 +3,7 @@ import * as child_process from 'child_process'
 import { applyDecorations, clearDecorations } from './decorations'
 import { IgnoreSystem, initNormignore, isIgnored } from './normignore'
 import { execNorminette, NormInfo } from './norminette'
+import * as os from 'os'
 
 function getConfig(): vscode.WorkspaceConfiguration {
 	return vscode.workspace.getConfiguration('codam-norminette-3')
@@ -40,14 +41,16 @@ export function log(msg: string) {
 async function updateDecorations(editor: vscode.TextEditor, command: string, pattern: RegExp, ignores: IgnoreSystem, ignoreErrors: string[]) {
 	if (!editor || !command) return
 
-	const filename: string = editor.document.uri.path.replace(/^.*[\\\/]/, '') // possibly just \/ instead of \\\/
+	let filename: string = editor.document.uri.path.replace(/^.*[\\\/]/, '') // possibly just \/ instead of \\\/
+	if (os.platform() == 'win32')
+		filename = filename.slice(1); // windows ads a '/' prefix to every path so here we delete it
 
 	if (!pattern.test(filename)) return
 	if (ignores && isIgnored(editor.document.uri, ignores)) return
 
-	log(`Executing norminette on: ${editor.document.uri.path}`)
+	log(`Executing norminette on: ${filename}`)
 
-	const data: NormInfo[] = await execNorminette(editor.document.uri.path, command)
+	const data: NormInfo[] = await execNorminette(filename, command)
 	log(`norm info: ${JSON.stringify(data)}`)
 	if (data) applyDecorations(data, editor, ignoreErrors)
 }
