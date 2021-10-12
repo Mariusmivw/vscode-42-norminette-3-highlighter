@@ -1,0 +1,9 @@
+*
+*/
+!out/
+!out/*.js
+src/
+!img/
+# !img/*
+!README.md
+!CHANGELOG.md
