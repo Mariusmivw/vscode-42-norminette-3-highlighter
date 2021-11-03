@@ -1,13 +1,10 @@
-<img
-  src="https://raw.githubusercontent.com/Mariusmivw/vscode-42-norminette-3-highlighter/master/img/42.png"
-  width=128>
+<img src="https://raw.githubusercontent.com/Mariusmivw/vscode-42-norminette-3-highlighter/master/img/42.png" width=128>
 
 # 42 Norminette V3.x for VSCode
-
-This extension is a Norminette (version 3.x) decorator for 42 in VSCode
+This extension is a Norminette (version 3.x) decorator for 42 in VSCode\
 ![example](img/example.gif)
-## Install
 
+## Installation
 This extension can be found at:
 [The VSCode Marketplace](https://marketplace.visualstudio.com/items?itemName=MariusvanWijk-JoppeKoers.codam-norminette-3) and [The OpenVSX Marketplace](https://open-vsx.org/extension/MariusvanWijk-JoppeKoers/codam-norminette-3)
 
@@ -22,16 +19,20 @@ This extension can also be installed from a VSIX package, which can be found on 
 
 If there are changes to the file, the norm is automatically checked on save
 
-To enable or disable the highlighter you can press <kbd>Shift</kbd>+<kbd>⌘</kbd>+<kbd>P</kbd>
+To enable or disable the highlighter you can press <kbd>Shift</kbd>+<kbd>⌘</kbd>+<kbd>p</kbd>\
 ![enable|disable|toggle](img/enable.gif)
 
-## Configuration
-
+## Features
+### Normingnore
+If you want to ignore norminette errors in specific files in your project you can add a `.normingnore` file.
+This files works in the same way as a `.gitignore` file.
+### Settings
+In VSCode's settings.json you can add these lines if you want custom configuration
 ```json5
 {
-	"codam-norminette-3.command": "norminette",
-	"codam-norminette-3.fileregex": "\\.[ch]$",
-	"codam-norminette-3.ignoreErrors": [
+	"codam-norminette-3.command": "norminette", // command to execute norminette
+	"codam-norminette-3.fileregex": "\\.[ch]$", // regex that matches the files you want to norm check
+	"codam-norminette-3.ignoreErrors": [ // do not highlight these norm errors
 		// "WRONG_SCOPE_COMMENT",
 		// "LINE_TOO_LONG"
 	]
@@ -39,10 +40,7 @@ To enable or disable the highlighter you can press <kbd>Shift</kbd>+<kbd>⌘</kb
 ```
 
 ## Issues
-
 To report a bug or ask for a feature, please open a [Github issue](https://github.com/Mariusmivw/vscode-42-norminette-3-highlighter/issues)
 
-
 ## License
-
 MIT
