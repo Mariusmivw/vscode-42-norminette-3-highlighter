@@ -23,8 +23,8 @@ To enable or disable the highlighter you can press <kbd>Shift</kbd>+<kbd>⌘</kb
 ![enable|disable|toggle](img/enable.gif)
 
 ## Features
-### Normingnore
-If you want to ignore norminette errors in specific files in your project you can add a `.normingnore` file.
+### Normignore
+If you want to ignore norminette errors in specific files in your project you can add a `.normignore` file.
 This files works in the same way as a `.gitignore` file.
 ### Settings
 In VSCode's settings.json you can add these lines if you want custom configuration
