@@ -17,6 +17,10 @@ export type NormInfo = {
 	errorText: string
 }
 
+export type NormData = {
+	[file: string]: NormInfo[]
+}
+
 function normDecrypt(normLine: string): NormInfo {
 	try {
 		const [fullText, error, line, col, errorText] = normLine.match(/\s*([A-Z_]*)\s*\(line:\s*(\d*),\s*col:\s*(\d+)\):\s*(.*)/)
@@ -32,19 +36,47 @@ function normDecrypt(normLine: string): NormInfo {
 		return (result)
 	}
 	catch (e) {
-		return null
+		try {
+			const [fullText, errorText, line, col] = normLine.match(/(?:\s|\033\[.*m)*Error: (Unrecognized token) line (\d+), col (\d+)/)
+			const result = {
+				fullText,
+				error: 'UNRECOGNIZED_TOKEN',
+				line: parseInt(line) - 1,
+				col: parseInt(col) - 2,
+				errorText
+			}
+			return (result)
+		}
+		catch (e) {
+			return null
+		}
 	}
 }
 
-export async function execNorminette(filename: string, command: string): Promise<NormInfo[]> {
-	const { stdout } = await execAsync(`${command} '${filename}'`)
+export async function execNorminette(path: string, command: string): Promise<NormData> {
+	const { stdout } = await execAsync(`${command} '${path}'`)
 	const lines = stdout.split('\n').slice(1, -1)
-	let normDecrypted = []
+	const normDecrypted: NormInfo[] = []
+	const newNormDecrypted: NormData = {}
+	let currentFile: string
 	for (const line of lines) {
-		log(`line: ${line}`)
-		const decrypted = normDecrypt(line)
-		if (decrypted)
-			normDecrypted.push(decrypted)
+		if (/Error:/.test(line))
+		{
+			if (line.endsWith('is not valid C or C header file'))
+				continue
+			log(`line: ${line}\n\t(${escape(line)})`)
+			const decrypted = normDecrypt(line)
+			if (decrypted)
+			{
+				normDecrypted.push(decrypted)
+				if (!newNormDecrypted[currentFile])
+					newNormDecrypted[currentFile] = []
+				newNormDecrypted[currentFile].push(decrypted)
+			}
+		} else {
+			const [_, filename, err_ok] = line.match(/(.*): (Error|OK)!$/)
+			currentFile = filename
+		}
 	}
-	return normDecrypted
+	return newNormDecrypted
 }

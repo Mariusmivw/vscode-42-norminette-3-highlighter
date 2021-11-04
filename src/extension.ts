@@ -1,16 +1,18 @@
 import * as vscode from 'vscode'
+import * as util from 'util'
+import * as os from 'os'
 import { applyDecorations, clearDecorations } from './decorations'
 import { IgnoreSystem, initNormignore, isIgnored } from './normignore'
-import { execNorminette, NormInfo } from './norminette'
-import * as os from 'os'
+import { execNorminette, NormData } from './norminette'
 import { EnvironmentVariables, getEnvironmentVariables } from './getEnvironmentVariables'
+import { NorminetteProvider } from './tree'
 
 let outputChannel: vscode.OutputChannel
 
-export function log(msg: string) {
+export function log(...msgs: any[]) {
 	if (!outputChannel)
 		outputChannel = vscode.window.createOutputChannel('codam-norminette-3')
-	outputChannel.appendLine(msg)
+	outputChannel.appendLine(msgs.map((msg)=>util.inspect(msg, false, null, false)).join(' '))
 }
 
 async function updateDecorations(editor: vscode.TextEditor, ignores: IgnoreSystem, env: EnvironmentVariables) {
@@ -29,10 +31,10 @@ async function updateDecorations(editor: vscode.TextEditor, ignores: IgnoreSyste
 
 	log(`Executing norminette on: ${path}`)
 
-	const data: NormInfo[] = await execNorminette(path, env.command)
+	const data: NormData = await execNorminette(path, env.command)
 	log(`norm info: ${JSON.stringify(data)}`)
 	if (data)
-		applyDecorations(data, editor, env.ignoreErrors)
+		applyDecorations(data, editor, env.ignoreErrors, env.displayErrorName)
 }
 
 export function activate(context: vscode.ExtensionContext) {
@@ -62,6 +64,10 @@ export function activate(context: vscode.ExtensionContext) {
 				cmds.enable()
 		},
 	}
+
+	vscode.window.createTreeView('normTree', {
+		treeDataProvider: new NorminetteProvider(vscode.workspace.workspaceFolders)
+	});
 
 	vscode.window.onDidChangeActiveTextEditor(editor => {
 		if (editor)

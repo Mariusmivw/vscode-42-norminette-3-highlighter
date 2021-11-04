@@ -30,7 +30,8 @@ export type EnvironmentVariables = {
 	command: string,
 	wsl: boolean,
 	regex: RegExp,
-	ignoreErrors: string[]
+	ignoreErrors: string[],
+	displayErrorName: boolean
 }
 export function getEnvironmentVariables(): EnvironmentVariables | null {
 	const workspaceConfiguration = vscode.workspace.getConfiguration('codam-norminette-3')
@@ -41,6 +42,7 @@ export function getEnvironmentVariables(): EnvironmentVariables | null {
 		command: command.command,
 		wsl: command.wsl,
 		regex: new RegExp(workspaceConfiguration.get(`regex`)),
-		ignoreErrors: workspaceConfiguration.get(`ignoreErrors`) as string[]
+		ignoreErrors: workspaceConfiguration.get(`ignoreErrors`) as string[],
+		displayErrorName: workspaceConfiguration.get(`displayErrorName`) as boolean
 	}
 }

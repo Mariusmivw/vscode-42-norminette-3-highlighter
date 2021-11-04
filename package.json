@@ -32,6 +32,14 @@
 		"vsce": "^1.100.1"
 	},
 	"contributes": {
+		"views": {
+			"explorer": [
+				{
+					"id": "normTree",
+					"name": "Norminette: Tree"
+				}
+			]
+		},
 		"commands": [
 			{
 				"command": "codam-norminette-3.enable",
@@ -57,7 +65,7 @@
 						"type": "string"
 					},
 					"default": [],
-					"description": "List of norminette errors to not highlight, e.g.: WRONG_SCOPE_COMMENT"
+					"description": "List of norminette errors to not highlight, e.g.: WRONG_SCOPE_COMMENT (see displayErrorName setting)"
 				},
 				"codam-norminette-3.command": {
 					"type": "string",
@@ -68,6 +76,11 @@
 					"type": "string",
 					"default": "\\.[ch]$",
 					"description": "Specifies which files to run norminette on \n defaults to \\.[ch]$"
+				},
+				"codam-norminette-3.displayErrorName": {
+					"type": "boolean",
+					"default": false,
+					"description": "Whether or not to show the name of the error in the hover text"
 				}
 			}
 		}
