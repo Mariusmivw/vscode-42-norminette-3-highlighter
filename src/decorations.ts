@@ -1,7 +1,6 @@
 import * as vscode from 'vscode'
 import { findMatchingBracket, parseBrackets } from './brackets'
 import { NormData } from './norminette'
-import { log } from './extension'
 
 const decorations = {
 	errors: vscode.window.createTextEditorDecorationType({
@@ -50,19 +49,18 @@ function getTabOffset(text: string, col: number): number {
 	return tabOffset
 }
 
-export function applyDecorations(normInfos: NormData, editor: vscode.TextEditor, ignoreErrors: string[], displayErrorName: boolean) {
+export function applyDecorations(normData: NormData, editor: vscode.TextEditor, ignoreErrors: string[], displayErrorName: boolean) {
 	const errors: vscode.DecorationOptions[] = []
 	const wholeLineErrors: vscode.DecorationOptions[] = []
 
-	normInfos[Object.keys(normInfos)[0]].forEach((e) => {
+	normData[Object.keys(normData)[0]].forEach((e) => {
 		if (ignoreErrors.includes(e.error)) return
 		const decoration = {
 			range: null,
-			hoverMessage: `**Error: ${e.errorText}${displayErrorName?` *(${e.error})*`:''}**`,
+			hoverMessage: `**Error: ${e.errorText}${displayErrorName ? ` *(${e.error})*` : ''}**`,
 		}
 		const line: vscode.TextLine = editor.document.lineAt(e.line)
 		const tabOffset: number = getTabOffset(line.text, e.col)
-		log(`error: ${e.error} e.col: ${e.col} col: ${e.col - tabOffset}`)
 		const wordRangeAtPosition: vscode.Range = editor.document.getWordRangeAtPosition(new vscode.Position(e.line, e.col - tabOffset))
 		if (e.error === 'TOO_MANY_LINES') {
 			const startBracket = findMatchingBracket(new vscode.Position(e.line, e.col), parseBrackets(editor.document.getText()))

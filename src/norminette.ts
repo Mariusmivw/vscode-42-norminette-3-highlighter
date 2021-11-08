@@ -53,30 +53,28 @@ function normDecrypt(normLine: string): NormInfo {
 	}
 }
 
-export async function execNorminette(path: string, command: string): Promise<NormData> {
+export async function execNorminette(path: string, command: string): Promise<NormData | null> {
 	const { stdout } = await execAsync(`${command} '${path}'`)
-	const lines = stdout.split('\n').slice(1, -1)
-	const normDecrypted: NormInfo[] = []
-	const newNormDecrypted: NormData = {}
+	const lines = stdout.split('\n').slice(0, -1)
+	const normDecrypted: NormData = {}
 	let currentFile: string
 	for (const line of lines) {
-		if (/Error:/.test(line))
-		{
+		if (/Error:/.test(line)) {
 			if (line.endsWith('is not valid C or C header file'))
 				continue
-			log(`line: ${line}\n\t(${escape(line)})`)
+			// log('line:', line, '\nescaped:', escape(line))
 			const decrypted = normDecrypt(line)
-			if (decrypted)
-			{
-				normDecrypted.push(decrypted)
-				if (!newNormDecrypted[currentFile])
-					newNormDecrypted[currentFile] = []
-				newNormDecrypted[currentFile].push(decrypted)
+			if (decrypted) {
+				if (!normDecrypted[currentFile])
+					normDecrypted[currentFile] = []
+				normDecrypted[currentFile].push(decrypted)
 			}
 		} else {
 			const [_, filename, err_ok] = line.match(/(.*): (Error|OK)!$/)
 			currentFile = filename
 		}
 	}
-	return newNormDecrypted
+	if (Object.keys(normDecrypted).length == 0)
+		return null
+	return normDecrypted
 }

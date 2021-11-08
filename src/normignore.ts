@@ -1,5 +1,5 @@
 import ignore, { Ignore } from 'ignore'
-import * as fs from 'fs';
+import * as fs from 'fs'
 import * as path from 'path'
 import * as vscode from 'vscode'
 import { log } from './extension'
@@ -20,7 +20,7 @@ export function initNormignore(): IgnoreSystem {
 	async function addIgnoreFile(fsPath: string, workspace: string, ignorePath: string) {
 		if (!ignores.workspaces[workspace])
 			ignores.workspaces[workspace] = {}
-		log('created / changed: ' + fsPath)
+		log('created / changed:', fsPath)
 		const fileContent = (await fs.promises.readFile(fsPath)).toString()
 		ignores.workspaces[workspace][ignorePath] = ignore().add(fileContent)
 	}
@@ -55,7 +55,7 @@ export function initNormignore(): IgnoreSystem {
 		const { workspace, ignorePath } = get(fileUri)
 		ignores.ignored = []
 		ignores.notIgnored = []
-		log('deleted: ' + fileUri.fsPath)
+		log('deleted:', fileUri.fsPath)
 		if (workspace && ignores.workspaces[workspace] && ignores.workspaces[workspace][ignorePath])
 			delete ignores.workspaces[workspace][ignorePath]
 	})

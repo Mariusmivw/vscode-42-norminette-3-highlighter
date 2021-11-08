@@ -32,6 +32,15 @@
 		"vsce": "^1.100.1"
 	},
 	"contributes": {
+		"menus": {
+			"view/title": [
+				{
+					"command": "codam-norminette-3.refresh-tree",
+					"when": "view == normTree",
+					"group": "navigation"
+				}
+			]
+		},
 		"views": {
 			"explorer": [
 				{
@@ -42,16 +51,24 @@
 		},
 		"commands": [
 			{
+				"command": "codam-norminette-3.refresh-tree",
+				"title": "Refresh Tree",
+				"category": "Norminette Highlighter"
+			},
+			{
 				"command": "codam-norminette-3.enable",
-				"title": "Norminette Highlighter: Enable"
+				"title": "Enable",
+				"category": "Norminette Highlighter"
 			},
 			{
 				"command": "codam-norminette-3.disable",
-				"title": "Norminette Highlighter: Disable"
+				"title": "Disable",
+				"category": "Norminette Highlighter"
 			},
 			{
 				"command": "codam-norminette-3.toggle",
-				"title": "Norminette Highlighter: Toggle"
+				"title": "Toggle",
+				"category": "Norminette Highlighter"
 			}
 		],
 		"configuration": {

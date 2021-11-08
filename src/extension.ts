@@ -12,13 +12,15 @@ let outputChannel: vscode.OutputChannel
 export function log(...msgs: any[]) {
 	if (!outputChannel)
 		outputChannel = vscode.window.createOutputChannel('codam-norminette-3')
-	outputChannel.appendLine(msgs.map((msg)=>util.inspect(msg, false, null, false)).join(' '))
+	outputChannel.appendLine(msgs.map((msg) => util.inspect(msg, false, null, false)).join(' '))
 }
 
 async function updateDecorations(editor: vscode.TextEditor, ignores: IgnoreSystem, env: EnvironmentVariables) {
+	if (editor.document.uri.scheme != 'file')
+		return
 	let path = editor.document.uri.path
 	if (os.platform() == 'win32') {
-		path = path.slice(1); // windows ads a '/' prefix to every path so here we delete it
+		path = path.slice(1) // windows ads a '/' prefix to every path so here we delete it
 		if (env.wsl)
 			path = path.replace(/^.:/, (m: string) => `/mnt/${m.slice(0, -1).toLowerCase()}`)
 	}
@@ -29,12 +31,13 @@ async function updateDecorations(editor: vscode.TextEditor, ignores: IgnoreSyste
 	if (ignores && isIgnored(editor.document.uri, ignores))
 		return
 
-	log(`Executing norminette on: ${path}`)
+	log('Executing norminette on:', path)
 
 	const data: NormData = await execNorminette(path, env.command)
-	log(`norm info: ${JSON.stringify(data)}`)
 	if (data)
 		applyDecorations(data, editor, env.ignoreErrors, env.displayErrorName)
+	else
+		clearDecorations(editor)
 }
 
 export function activate(context: vscode.ExtensionContext) {
@@ -65,9 +68,11 @@ export function activate(context: vscode.ExtensionContext) {
 		},
 	}
 
+	const norminetteProvider = new NorminetteProvider(vscode.workspace.workspaceFolders)
 	vscode.window.createTreeView('normTree', {
-		treeDataProvider: new NorminetteProvider(vscode.workspace.workspaceFolders)
-	});
+		treeDataProvider: norminetteProvider
+	})
+	vscode.commands.registerCommand('codam-norminette-3.refresh-tree', () => norminetteProvider.updateEntireTree())
 
 	vscode.window.onDidChangeActiveTextEditor(editor => {
 		if (editor)
@@ -87,9 +92,12 @@ export function activate(context: vscode.ExtensionContext) {
 
 	let timeout: NodeJS.Timeout = undefined
 	function triggerUpdateDecorations(editor: vscode.TextEditor) {
+		if (editor.document.uri.scheme != 'file')
+			return
 		if (timeout)
 			clearTimeout(timeout)
 		timeout = setTimeout(() => {
+			norminetteProvider.updateTreeItem(editor)
 			if (enabled)
 				updateDecorations(editor, ignores, env)
 			else
@@ -101,7 +109,7 @@ export function activate(context: vscode.ExtensionContext) {
 		context.subscriptions.push(vscode.commands.registerCommand(`codam-norminette-3.${cmd}`, cmds[cmd]))
 	}
 
-	for (const editor of vscode.window.visibleTextEditors) {
-		updateDecorations(editor, ignores, env)
-	}
+	// for (const editor of vscode.window.visibleTextEditors) {
+	// 	updateDecorations(editor, ignores, env)
+	// }
 }
