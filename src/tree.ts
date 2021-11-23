@@ -2,6 +2,7 @@ import * as path from 'path'
 import * as vscode from 'vscode'
 import { log } from './extension'
 import { getEnvironmentVariables } from './getEnvironmentVariables'
+import { IgnoreSystem, isIgnored } from './normignore'
 import { execNorminette, NormData, NormInfo } from './norminette'
 
 enum NormTreeNodeType {
@@ -20,12 +21,14 @@ type NormTreeNodeData = {
 } | {
 	type: NormTreeNodeType.NORM_ERROR
 	file: string
-	errorData: NormInfo
+	errorData: NormInfo,
+	errorId: number
 })
 
 export class NorminetteProvider implements vscode.TreeDataProvider<NormTreeNode> {
 	private data: { [a: string]: Promise<NormData> } = {}
-	constructor(private workspaceFolders: readonly vscode.WorkspaceFolder[]) {
+	constructor(private workspaceFolders: readonly vscode.WorkspaceFolder[], private ignores: IgnoreSystem) {
+		ignores.onChange.event(() => this.updateEntireTree(true))
 		this.updateEntireTree(false)
 	}
 
@@ -45,10 +48,31 @@ export class NorminetteProvider implements vscode.TreeDataProvider<NormTreeNode>
 		}
 	}
 
+	private getUnignoredNormData(path: string): Promise<NormData> {
+		return new Promise<NormData>((resolve) => {
+			execNorminette(path, getEnvironmentVariables().command).then((data) => {
+				if (data == null)
+				{
+					resolve(null)
+					return ;
+				}
+				const new_data: NormData = {}
+				for (const file in data)
+				{
+					if (!isIgnored(vscode.Uri.parse(file), this.ignores))
+					{
+						new_data[file] = data[file]
+					}
+				}
+				resolve(new_data)
+			})
+		})
+	}
+
 	updateEntireTree(do_refresh = true) {
 		this.data = {}
 		for (const folder of this.workspaceFolders) {
-			this.data[folder.uri.path] = execNorminette(folder.uri.path, getEnvironmentVariables().command)
+			this.data[folder.uri.path] = this.getUnignoredNormData(folder.uri.path)
 		}
 		if (do_refresh)
 			this.refresh()
@@ -58,8 +82,8 @@ export class NorminetteProvider implements vscode.TreeDataProvider<NormTreeNode>
 		if (editor.document.uri.scheme != 'file')
 			return
 		const file_path = editor.document.uri.path
-		log('updating:', file_path)
-		const new_data = await execNorminette(file_path, getEnvironmentVariables().command)
+
+		const new_data = await this.getUnignoredNormData(file_path)
 		const new_data_string = JSON.stringify(new_data)
 		let changed = false
 		for (const folder in this.data) {
@@ -106,22 +130,25 @@ export class NorminetteProvider implements vscode.TreeDataProvider<NormTreeNode>
 			// Create norm errors
 			const filePath = element.data.path
 			const normData = element.data.normData[filePath]
-			return normData.map((datum) => {
+			return normData.map((datum, index) => {
 				return new NormTreeNode(datum.errorText, {
 					type: NormTreeNodeType.NORM_ERROR,
 					errorData: datum,
-					file: filePath
+					file: filePath,
+					errorId: index
 				})
 			})
 		}
 
 		const normData = element.data.normData
 		const [folders, files] = this.getContents(element.data.path, Object.keys(normData))
-		return [...folders.map((folder) => {
-			return new NormTreeNode(path.basename(folder), {
+
+		// log('folders:', folders, 'data:', normData)
+		return [...folders.map((folder_path) => {
+			return new NormTreeNode(path.basename(folder_path), {
 				type: NormTreeNodeType.FOLDER,
-				path: folder,
-				normData: this.getNormData(folder, normData)
+				path: folder_path,
+				normData: this.getNormData(folder_path, normData)
 			})
 		}), ...files.map((file) => {
 			return new NormTreeNode(path.basename(file), {
@@ -136,7 +163,7 @@ export class NorminetteProvider implements vscode.TreeDataProvider<NormTreeNode>
 		const folders = new Set<string>()
 		const files = new Set<string>()
 		for (const pp of paths) {
-			if (!pp.startsWith(p))
+			if (path.relative(p, pp).startsWith('../'))
 				continue
 			const rel = path.relative(p, pp)
 			const folder_name = rel.split(path.sep)[0]
@@ -164,7 +191,7 @@ class NormTreeNode extends vscode.TreeItem {
 		super(label, data.type == NormTreeNodeType.NORM_ERROR ? vscode.TreeItemCollapsibleState.None : vscode.TreeItemCollapsibleState.Collapsed)
 		this.tooltip = `label: ${label} test`
 		if (data.type == NormTreeNodeType.NORM_ERROR) {
-			this.id = `${data.file} ${data.errorData.fullText}`
+			this.id = `${data.file} ${data.errorData.fullText} ${data.errorId}`
 			this.description = `line: ${data.errorData.line + 1}`
 			this.tooltip = data.errorData.fullText
 

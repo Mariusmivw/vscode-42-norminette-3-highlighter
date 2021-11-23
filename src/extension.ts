@@ -41,6 +41,7 @@ async function updateDecorations(editor: vscode.TextEditor, ignores: IgnoreSyste
 }
 
 export function activate(context: vscode.ExtensionContext) {
+	log('Extension activated')
 	let enabled: boolean = true
 	let env: EnvironmentVariables = getEnvironmentVariables()
 	if (!env)
@@ -68,7 +69,7 @@ export function activate(context: vscode.ExtensionContext) {
 		},
 	}
 
-	const norminetteProvider = new NorminetteProvider(vscode.workspace.workspaceFolders)
+	const norminetteProvider = new NorminetteProvider(vscode.workspace.workspaceFolders, ignores)
 	vscode.window.createTreeView('normTree', {
 		treeDataProvider: norminetteProvider
 	})
