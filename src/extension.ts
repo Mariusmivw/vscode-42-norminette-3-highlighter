@@ -67,13 +67,14 @@ export function activate(context: vscode.ExtensionContext) {
 			else
 				cmds.enable()
 		},
+		'refresh-tree': () => {}
 	}
 
 	const norminetteProvider = new NorminetteProvider(vscode.workspace.workspaceFolders, ignores)
 	vscode.window.createTreeView('normTree', {
 		treeDataProvider: norminetteProvider
 	})
-	vscode.commands.registerCommand('codam-norminette-3.refresh-tree', () => norminetteProvider.updateEntireTree())
+	cmds['refresh-tree'] = () => norminetteProvider.updateEntireTree()
 
 	vscode.window.onDidChangeActiveTextEditor(editor => {
 		if (editor)
