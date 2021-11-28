@@ -68,6 +68,11 @@
 					"type": "string",
 					"default": "\\.[ch]$",
 					"description": "Specifies which files to run norminette on \n defaults to \\.[ch]$"
+				},
+				"codam-norminette-3.highlight-color": {
+					"type": "string",
+					"default": "editorOverviewRuler.errorForeground",
+					"description": "Decide what color the highlight needs to be. Can be in rgba, hex, or vscode.ThemeColor format."
 				}
 			}
 		}
