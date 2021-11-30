@@ -1,5 +1,5 @@
 import * as vscode from 'vscode'
-import { applyDecorations, clearDecorations } from './decorations'
+import { applyDecorations, clearDecorations, updateDecorationColor } from './decorations'
 import { IgnoreSystem, initNormignore, isIgnored } from './normignore'
 import { execNorminette, NormInfo } from './norminette'
 import * as os from 'os'
@@ -75,8 +75,10 @@ export function activate(context: vscode.ExtensionContext) {
 	}, null, context.subscriptions)
 
 	vscode.workspace.onDidChangeConfiguration((change) => {
-		if (change.affectsConfiguration('codam-norminette-3'))
-			env = getEnvironmentVariables()
+		if (change.affectsConfiguration('codam-norminette-3')) {
+			env = getEnvironmentVariables();
+			updateDecorationColor();
+		}
 	})
 
 	let timeout: NodeJS.Timeout = undefined

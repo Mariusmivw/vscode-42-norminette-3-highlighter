@@ -6,14 +6,35 @@ const decorations = {
 	errors: vscode.window.createTextEditorDecorationType({
 		overviewRulerColor: 'red',
 		overviewRulerLane: vscode.OverviewRulerLane.Right,
-		backgroundColor: 'rgba(255,0,0,0.2)',
+		backgroundColor: getDecorationColor(),
 	}),
 	wholeLine: vscode.window.createTextEditorDecorationType({
 		overviewRulerColor: 'red',
 		overviewRulerLane: vscode.OverviewRulerLane.Right,
-		backgroundColor: 'rgba(255,0,0,0.2)',
+		backgroundColor: getDecorationColor(),
 		isWholeLine: true,
 	}),
+}
+
+function getDecorationColor(): string | vscode.ThemeColor {
+	const input: string = vscode.workspace.getConfiguration("codam-norminette-3").get("highlight-color");
+
+	if (input.startsWith("#") || input.startsWith("rgb"))
+		return input;
+	return new vscode.ThemeColor(input);
+}
+
+export function updateDecorationColor() {
+	decorations.errors = vscode.window.createTextEditorDecorationType({
+		overviewRulerColor: 'red',
+		overviewRulerLane: vscode.OverviewRulerLane.Right,
+		backgroundColor: getDecorationColor(),
+	});
+	decorations.wholeLine = vscode.window.createTextEditorDecorationType({
+		overviewRulerColor: 'red',
+		overviewRulerLane: vscode.OverviewRulerLane.Right,
+		backgroundColor: getDecorationColor(),
+	});
 }
 
 function decorateWholeLine(line: string): boolean {
