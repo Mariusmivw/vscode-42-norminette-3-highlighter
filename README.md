@@ -35,7 +35,8 @@ In VSCode's settings.json you can add these lines if you want custom configurati
 	"codam-norminette-3.ignoreErrors": [ // do not highlight these norm errors
 		// "WRONG_SCOPE_COMMENT",
 		// "LINE_TOO_LONG"
-	]
+	],
+	"codam-norminette-3.highlight-color": "rgba(255,0,0,0.2)" // highlight norm errors in custom color. Can be in rgba, hex, or vscode.ThemeColor format.
 }
 ```
 
