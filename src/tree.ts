@@ -44,7 +44,12 @@ export class NorminetteProvider implements vscode.TreeDataProvider<NormTreeNode>
 		if (element) {
 			return Promise.resolve(this.getData(null, element)) // get a sub element
 		} else {
-			return Promise.all(this.workspaceFolders.map(async (folder) => (await this.getData(folder, null))[0])) // get a root element
+			return Promise.all(this.workspaceFolders.map(async (folder) => {
+				const data = await this.getData(folder, null)
+				if (data === undefined)
+					return null
+				return data[0]
+			})) // get a root element
 		}
 	}
 
@@ -89,14 +94,14 @@ export class NorminetteProvider implements vscode.TreeDataProvider<NormTreeNode>
 		for (const folder in this.data) {
 			const folder_data = await this.data[folder]
 			if (file_path in folder_data) {
-				if (new_data == null) {
+				if (new_data == null || new_data_string == '{}') {
 					changed = true
 					delete folder_data[file_path]
 				} else if (changed || JSON.stringify(folder_data[file_path]) != new_data_string) {
 					changed = true
 					folder_data[file_path] = new_data[file_path]
 				}
-			} else if (new_data != null && file_path.startsWith(folder)) {
+			} else if (new_data != null && new_data_string != '{}' && file_path.startsWith(folder)) {
 				changed = true
 				folder_data[file_path] = new_data[file_path]
 			}
@@ -205,7 +210,11 @@ class NormTreeNode extends vscode.TreeItem {
 			}
 		} else {
 			this.id = `${data.path}`
-			const errorCount = Object.keys(data.normData).reduce((res, val) => res + data.normData[val].length, 0)
+			const errorCount = Object.keys(data.normData).reduce((res, val) => {
+				if (data.normData[val] == undefined)
+					return res
+				return res + data.normData[val].length
+			}, 0)
 			this.description = `${errorCount} error${errorCount == 1 ? '' : 's'}`
 			if (data.type == NormTreeNodeType.FILE) {
 				this.resourceUri = vscode.Uri.file(data.path)
