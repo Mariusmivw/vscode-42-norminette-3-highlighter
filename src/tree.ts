@@ -1,6 +1,5 @@
 import * as path from 'path'
 import * as vscode from 'vscode'
-import { log } from './extension'
 import { getEnvironmentVariables } from './getEnvironmentVariables'
 import { IgnoreSystem, isIgnored } from './normignore'
 import { execNorminette, NormData, NormInfo } from './norminette'
@@ -56,16 +55,13 @@ export class NorminetteProvider implements vscode.TreeDataProvider<NormTreeNode>
 	private getUnignoredNormData(path: string): Promise<NormData> {
 		return new Promise<NormData>((resolve) => {
 			execNorminette(path, getEnvironmentVariables().command).then((data) => {
-				if (data == null)
-				{
+				if (data == null) {
 					resolve(null)
-					return ;
+					return
 				}
 				const new_data: NormData = {}
-				for (const file in data)
-				{
-					if (!isIgnored(vscode.Uri.parse(file), this.ignores))
-					{
+				for (const file in data) {
+					if (!isIgnored(vscode.Uri.parse(file), this.ignores)) {
 						new_data[file] = data[file]
 					}
 				}

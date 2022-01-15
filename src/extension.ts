@@ -67,7 +67,7 @@ export function activate(context: vscode.ExtensionContext) {
 			else
 				cmds.enable()
 		},
-		'refresh-tree': () => {}
+		'refresh-tree': () => { }
 	}
 
 	const norminetteProvider = new NorminetteProvider(vscode.workspace.workspaceFolders, ignores)

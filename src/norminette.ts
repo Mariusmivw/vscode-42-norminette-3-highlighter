@@ -1,5 +1,4 @@
 import { exec } from 'child_process'
-import { log } from './extension'
 
 async function execAsync(command): Promise<{ stdout: string, stderr: string } | null> {
 	return new Promise((resolve, reject) => {

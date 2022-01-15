@@ -16,7 +16,8 @@ export type IgnoreSystem = {
 }
 
 export function initNormignore(): IgnoreSystem {
-	const ignores: IgnoreSystem = { ignored: [], notIgnored: [], workspaces: {},
+	const ignores: IgnoreSystem = {
+		ignored: [], notIgnored: [], workspaces: {},
 		onChange: new vscode.EventEmitter<undefined | null | void>()
 	}
 
