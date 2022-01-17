@@ -20,12 +20,18 @@ This extension can also be installed from a VSIX package, which can be found on 
 If there are changes to the file, the norm is automatically checked on save
 
 To enable or disable the highlighter you can press <kbd>Shift</kbd>+<kbd>⌘</kbd>+<kbd>p</kbd>\
-![enable|disable|toggle](img/enable.gif)
+![enable|disable|toggle](img/enable4.gif)
 
 ## Features
 ### Normignore
 If you want to ignore norminette errors in specific files in your project you can add a `.normignore` file.
 This files works in the same way as a `.gitignore` file.
+
+### Tree view
+View a summary of all the Norminette errors in your workspace.\
+<img src="https://raw.githubusercontent.com/Mariusmivw/vscode-42-norminette-3-highlighter/master/img/tree.gif" width=500>
+
+
 ### Settings
 In VSCode's settings.json you can add these lines if you want custom configuration
 ```json5
