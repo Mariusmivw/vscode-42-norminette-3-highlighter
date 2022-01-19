@@ -41,7 +41,8 @@ In VSCode's settings.json you can add these lines if you want custom configurati
 	"codam-norminette-3.ignoreErrors": [ // do not highlight these norm errors
 		// "WRONG_SCOPE_COMMENT",
 		// "LINE_TOO_LONG"
-	]
+	],
+	"codam-norminette-3.displayErrorName": false // display name of error on hover
 }
 ```
 
