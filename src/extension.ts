@@ -74,7 +74,10 @@ export function activate(context: vscode.ExtensionContext) {
 	vscode.window.createTreeView('normTree', {
 		treeDataProvider: norminetteProvider
 	})
-	cmds['refresh-tree'] = () => norminetteProvider.updateEntireTree()
+	cmds['refresh-tree'] = () => {
+		log(vscode.workspace.workspaceFolders.map(f=>f.uri.path))
+		norminetteProvider.updateEntireTree()
+	}
 
 	vscode.window.onDidChangeActiveTextEditor(editor => {
 		if (editor)
@@ -90,7 +93,11 @@ export function activate(context: vscode.ExtensionContext) {
 	vscode.workspace.onDidChangeConfiguration((change) => {
 		if (change.affectsConfiguration('codam-norminette-3'))
 			env = getEnvironmentVariables()
-	})
+	}, null, context.subscriptions)
+
+	vscode.workspace.onDidChangeWorkspaceFolders(() => {
+		norminetteProvider.setWorkspaceFolders(vscode.workspace.workspaceFolders)
+	}, null, context.subscriptions)
 
 	let timeout: NodeJS.Timeout = undefined
 	function triggerUpdateDecorations(editor: vscode.TextEditor) {

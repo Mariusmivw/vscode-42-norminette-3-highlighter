@@ -3,6 +3,7 @@ import * as vscode from 'vscode'
 import { getEnvironmentVariables } from './getEnvironmentVariables'
 import { IgnoreSystem, isIgnored } from './normignore'
 import { execNorminette, NormData, NormInfo } from './norminette'
+import { log } from './extension'
 
 enum NormTreeNodeType {
 	ROOT,
@@ -28,7 +29,7 @@ export class NorminetteProvider implements vscode.TreeDataProvider<NormTreeNode>
 	private data: { [a: string]: Promise<NormData> } = {}
 	constructor(private workspaceFolders: readonly vscode.WorkspaceFolder[], private ignores: IgnoreSystem) {
 		ignores.onChange.event(() => this.updateEntireTree(true))
-		this.updateEntireTree(false)
+		// this.updateEntireTree(false)
 	}
 
 	getTreeItem(element: NormTreeNode): vscode.TreeItem {
@@ -50,6 +51,19 @@ export class NorminetteProvider implements vscode.TreeDataProvider<NormTreeNode>
 				return data[0]
 			})) // get a root element
 		}
+	}
+
+	setWorkspaceFolders(workspaceFolders: readonly vscode.WorkspaceFolder[]) {
+		// log(workspaceFolders.map(f=>f.uri.path))
+		const currentFolders = this.workspaceFolders.slice()
+		this.workspaceFolders = workspaceFolders
+		for (const workspaceFolder of currentFolders)
+		{
+			if (this.workspaceFolders.includes(workspaceFolder))
+				continue
+			delete this.data[workspaceFolder.uri.path]
+		}
+		this.refresh()
 	}
 
 	private getUnignoredNormData(path: string): Promise<NormData> {
@@ -110,6 +124,8 @@ export class NorminetteProvider implements vscode.TreeDataProvider<NormTreeNode>
 	readonly onDidChangeTreeData: vscode.Event<NormTreeNode | undefined | null | void> = this._onDidChangeTreeData.event
 
 	refresh(): void {
+		if (!this.data)
+			this.updateEntireTree()
 		this._onDidChangeTreeData.fire()
 	}
 

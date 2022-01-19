@@ -8,7 +8,9 @@
 			"group": "build",
 			"problemMatcher": [],
 			"label": "npm: test-compile",
-			"detail": "tsc -p ./"
+			"presentation": {
+				"reveal": "silent"
+			}
 		}
 	]
 }
