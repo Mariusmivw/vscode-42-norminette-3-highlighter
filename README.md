@@ -20,7 +20,7 @@ This extension can also be installed from a VSIX package, which can be found on 
 If there are changes to the file, the norm is automatically checked on save
 
 To enable or disable the highlighter you can press <kbd>Shift</kbd>+<kbd>⌘</kbd>+<kbd>p</kbd>\
-![enable|disable|toggle](img/enable4.gif)
+![enable|disable|toggle](img/enable.gif)
 
 ## Features
 ### Normignore
