@@ -51,7 +51,7 @@
 			"explorer": [
 				{
 					"id": "normTree",
-					"name": "Norminette: Tree",
+					"name": "Norminette Tree",
 					"type": "tree",
 					"visibility": "visible"
 				}
