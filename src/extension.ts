@@ -118,7 +118,7 @@ export function activate(context: vscode.ExtensionContext) {
 		context.subscriptions.push(vscode.commands.registerCommand(`codam-norminette-3.${cmd}`, cmds[cmd]))
 	}
 
-	// for (const editor of vscode.window.visibleTextEditors) {
-	// 	updateDecorations(editor, ignores, env)
-	// }
+	for (const editor of vscode.window.visibleTextEditors) {
+		updateDecorations(editor, ignores, env)
+	}
 }

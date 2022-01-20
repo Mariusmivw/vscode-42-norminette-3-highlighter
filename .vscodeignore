@@ -1,9 +1,7 @@
 *
 */
 !dist/
-src/
 !img/
-# !img/*
 !README.md
 !CHANGELOG.md
 !LICENSE.md
