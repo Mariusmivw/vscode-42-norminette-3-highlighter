@@ -1,6 +1,6 @@
 import * as vscode from 'vscode'
 import { findMatchingBracket, parseBrackets } from './brackets'
-import { NormInfo } from './norminette'
+import { NormData } from './norminette'
 
 const decorations = {
 	errors: vscode.window.createTextEditorDecorationType({
@@ -46,6 +46,7 @@ function decorateWholeLine(line: string): boolean {
 		'EMPTY_LINE_EOF',
 		'CONSECUTIVE_NEWLINES',
 		'LINE_TOO_LONG',
+		'UNRECOGNIZED_TOKEN'
 	]
 	for (const lineError of wholeLineErrors) {
 		if (line.includes(lineError))
@@ -69,15 +70,15 @@ function getTabOffset(text: string, col: number): number {
 	return tabOffset
 }
 
-export function applyDecorations(normInfos: NormInfo[], editor: vscode.TextEditor, ignoreErrors: string[]) {
+export function applyDecorations(normData: NormData, editor: vscode.TextEditor, ignoreErrors: string[], displayErrorName: boolean) {
 	const errors: vscode.DecorationOptions[] = []
 	const wholeLineErrors: vscode.DecorationOptions[] = []
 
-	normInfos.forEach((e) => {
+	normData[Object.keys(normData)[0]].forEach((e) => {
 		if (ignoreErrors.includes(e.error)) return
 		const decoration = {
 			range: null,
-			hoverMessage: `**Error: ${e.errorText}**`,
+			hoverMessage: `**Error: ${e.errorText}${displayErrorName ? ` *(${e.error})*` : ''}**`,
 		}
 		const line: vscode.TextLine = editor.document.lineAt(e.line)
 		const tabOffset: number = getTabOffset(line.text, e.col)

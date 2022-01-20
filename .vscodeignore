@@ -1,9 +1,7 @@
 *
 */
-!out/
-!out/*.js
-src/
+!dist/
 !img/
-# !img/*
 !README.md
 !CHANGELOG.md
+!LICENSE.md

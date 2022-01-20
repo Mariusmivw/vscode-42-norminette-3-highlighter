@@ -26,6 +26,12 @@ To enable or disable the highlighter you can press <kbd>Shift</kbd>+<kbd>⌘</kb
 ### Normignore
 If you want to ignore norminette errors in specific files in your project you can add a `.normignore` file.
 This files works in the same way as a `.gitignore` file.
+
+### Tree view
+View a summary of all the Norminette errors in your workspace.\
+<img src="https://raw.githubusercontent.com/Mariusmivw/vscode-42-norminette-3-highlighter/master/img/tree.gif" width=500>
+
+
 ### Settings
 In VSCode's settings.json you can add these lines if you want custom configuration
 ```json5
@@ -36,7 +42,8 @@ In VSCode's settings.json you can add these lines if you want custom configurati
 		// "WRONG_SCOPE_COMMENT",
 		// "LINE_TOO_LONG"
 	],
-	"codam-norminette-3.highlight-color": "rgba(255,0,0,0.2)" // highlight norm errors in custom color. Can be in rgba, hex, or vscode.ThemeColor format.
+	"codam-norminette-3.highlight-color": "rgba(255,0,0,0.2)", // highlight norm errors in custom color. Can be in rgba, hex, or vscode.ThemeColor format.
+	"codam-norminette-3.displayErrorName": false // display name of error on hover
 }
 ```
 

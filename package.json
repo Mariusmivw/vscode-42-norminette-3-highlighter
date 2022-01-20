@@ -13,37 +13,70 @@
 		"Other"
 	],
 	"activationEvents": [
-		"*"
+		"onFileSystem:file"
 	],
 	"repository": "https://github.com/Mariusmivw/vscode-42-norminette-3-highlighter",
 	"icon": "img/42.png",
-	"main": "./out/extension",
+	"main": "./dist/extension",
 	"scripts": {
-		"vscode:prepublish": "tsc -p ./",
-		"compile": "tsc -watch -p ./"
+		"vscode:prepublish": "npm run package",
+		"webpack": "webpack --mode development",
+		"webpack-dev": "webpack --mode development --watch",
+		"package": "webpack --mode production --devtool hidden-source-map",
+		"test-compile": "tsc -p ./"
 	},
 	"dependencies": {
-		"ignore": "^5.1.8"
+		"ignore": "^5.1.8",
+		"ts-loader": "^9.2.6",
+		"webpack": "^5.62.1",
+		"webpack-cli": "^4.9.1"
 	},
 	"devDependencies": {
 		"@types/node": "^14.14.31",
 		"@types/vscode": "^1.35.0",
 		"typescript": "^4.1.5",
-		"vsce": "^1.100.1"
+		"vsce": "^2.5.1"
 	},
 	"contributes": {
+		"menus": {
+			"view/title": [
+				{
+					"command": "codam-norminette-3.refresh-tree",
+					"when": "view == normTree",
+					"group": "navigation"
+				}
+			]
+		},
+		"views": {
+			"explorer": [
+				{
+					"id": "normTree",
+					"name": "Norminette Tree",
+					"type": "tree",
+					"visibility": "visible"
+				}
+			]
+		},
 		"commands": [
 			{
+				"command": "codam-norminette-3.refresh-tree",
+				"title": "Refresh Tree",
+				"category": "Norminette Highlighter"
+			},
+			{
 				"command": "codam-norminette-3.enable",
-				"title": "Norminette Highlighter: Enable"
+				"title": "Enable",
+				"category": "Norminette Highlighter"
 			},
 			{
 				"command": "codam-norminette-3.disable",
-				"title": "Norminette Highlighter: Disable"
+				"title": "Disable",
+				"category": "Norminette Highlighter"
 			},
 			{
 				"command": "codam-norminette-3.toggle",
-				"title": "Norminette Highlighter: Toggle"
+				"title": "Toggle",
+				"category": "Norminette Highlighter"
 			}
 		],
 		"configuration": {
@@ -57,7 +90,7 @@
 						"type": "string"
 					},
 					"default": [],
-					"description": "List of norminette errors to not highlight, e.g.: WRONG_SCOPE_COMMENT"
+					"description": "List of norminette errors to not highlight, e.g.: WRONG_SCOPE_COMMENT (see displayErrorName setting)"
 				},
 				"codam-norminette-3.command": {
 					"type": "string",
@@ -73,6 +106,11 @@
 					"type": "string",
 					"default": "rgba(255,0,0,0.2)",
 					"description": "Decide what color the highlight needs to be. Can be in rgba, hex, or vscode.ThemeColor format."
+				},
+				"codam-norminette-3.displayErrorName": {
+					"type": "boolean",
+					"default": false,
+					"description": "Whether or not to show the name of the error in the hover text"
 				}
 			}
 		}
