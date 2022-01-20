@@ -39,14 +39,12 @@ function normDecrypt(normLine: string): NormInfo {
 	catch (e) {
 		try {
 			const [fullText, token_or_line] = normLine.match(/(?:\s|\033\[.*m)*Error: Unrecognized (token|line) .*/)
-			if (token_or_line === 'token')
-			{
+			if (token_or_line === 'token') {
 				var [_, errorText, line_str, col_str] = normLine.match(/.* (Unrecognized token) line (\d+), col (\d+)/)
 				var line = parseInt(line_str) - 1
 				var col = parseInt(col_str) - 2
 			}
-			else if (token_or_line === 'line')
-			{
+			else if (token_or_line === 'line') {
 				const [_, errorText1, line_str, col_str, errorText2] = normLine.match(/.* (Unrecognized line )\((\d+), (\d+)\) (while parsing line)/)
 				var errorText = errorText1 + errorText2
 				var line = parseInt(line_str) - 1

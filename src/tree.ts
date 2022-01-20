@@ -57,8 +57,7 @@ export class NorminetteProvider implements vscode.TreeDataProvider<NormTreeNode>
 		// log(workspaceFolders.map(f=>f.uri.path))
 		const currentFolders = this.workspaceFolders.slice()
 		this.workspaceFolders = workspaceFolders
-		for (const workspaceFolder of currentFolders)
-		{
+		for (const workspaceFolder of currentFolders) {
 			if (this.workspaceFolders.includes(workspaceFolder))
 				continue
 			delete this.data[workspaceFolder.uri.path]
