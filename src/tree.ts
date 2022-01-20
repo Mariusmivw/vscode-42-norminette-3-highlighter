@@ -29,7 +29,7 @@ export class NorminetteProvider implements vscode.TreeDataProvider<NormTreeNode>
 	private data: { [a: string]: Promise<NormData> } = {}
 	constructor(private workspaceFolders: readonly vscode.WorkspaceFolder[], private ignores: IgnoreSystem) {
 		ignores.onChange.event(() => this.updateEntireTree(true))
-		// this.updateEntireTree(false)
+		this.updateEntireTree(false)
 	}
 
 	getTreeItem(element: NormTreeNode): vscode.TreeItem {
@@ -132,9 +132,7 @@ export class NorminetteProvider implements vscode.TreeDataProvider<NormTreeNode>
 	private async getData(folder: vscode.WorkspaceFolder | null, element: NormTreeNode | null) {
 		if (folder != null) {
 			// Create root folder
-			const normData = await this.data[folder.uri.path]
-			if (normData == null)
-				return []
+			const normData = (await this.data[folder.uri.path]) || {}
 			return [new NormTreeNode(folder.name, {
 				type: NormTreeNodeType.ROOT,
 				path: folder.uri.path,
@@ -206,7 +204,7 @@ export class NorminetteProvider implements vscode.TreeDataProvider<NormTreeNode>
 class NormTreeNode extends vscode.TreeItem {
 	constructor(public readonly label: string, public data: NormTreeNodeData) {
 		super(label, data.type == NormTreeNodeType.NORM_ERROR ? vscode.TreeItemCollapsibleState.None : vscode.TreeItemCollapsibleState.Collapsed)
-		this.tooltip = `label: ${label} test`
+		this.tooltip = label
 		if (data.type == NormTreeNodeType.NORM_ERROR) {
 			this.id = `${data.file} ${data.errorData.fullText} ${data.errorId}`
 			this.description = `line: ${data.errorData.line + 1}`
