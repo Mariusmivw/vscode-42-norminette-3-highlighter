@@ -66,28 +66,38 @@ export class NorminetteProvider implements vscode.TreeDataProvider<NormTreeNode>
 		this.refresh()
 	}
 
-	private getUnignoredNormData(path: string): Promise<NormData> {
-		return new Promise<NormData>((resolve) => {
-			execNorminette(path, getEnvironmentVariables().command).then((data) => {
-				if (data == null) {
-					resolve(null)
-					return
-				}
-				const new_data: NormData = {}
-				for (const file in data) {
-					if (!isIgnored(vscode.Uri.parse(file), this.ignores)) {
-						new_data[file] = data[file]
-					}
-				}
-				resolve(new_data)
-			})
-		})
+	private async getUnignoredNormData(path: vscode.Uri): Promise<NormData> {
+		const files = await this.getAllUnignoredFilesRecursively(path);
+		// log(files);
+		return execNorminette(getEnvironmentVariables().command, ...files);
+	}
+
+	private async getAllUnignoredFilesRecursively(uri: vscode.Uri, files: string[] = [])
+	{
+		if ((await vscode.workspace.fs.stat(uri)).type & vscode.FileType.File)
+			return [ uri.path ]
+		const items = await vscode.workspace.fs.readDirectory(uri)
+		for (const [name, type] of items) {
+			if (name === '.git')
+				continue
+			const path = `${uri.path}/${name}`
+			const itemUri = uri.with({ path })
+			if (isIgnored(itemUri, this.ignores))
+				continue
+			if (type & vscode.FileType.File)
+				files.push(path)
+			else if (type & vscode.FileType.SymbolicLink)
+				{ /* do something */ }
+			else if (type & vscode.FileType.Directory)
+				await this.getAllUnignoredFilesRecursively(itemUri, files)
+		}
+		return files
 	}
 
 	updateEntireTree(do_refresh = true) {
 		this.data = {}
 		for (const folder of this.workspaceFolders) {
-			this.data[folder.uri.path] = this.getUnignoredNormData(folder.uri.path)
+			this.data[folder.uri.path] = this.getUnignoredNormData(folder.uri)
 		}
 		if (do_refresh)
 			this.refresh()
@@ -96,9 +106,10 @@ export class NorminetteProvider implements vscode.TreeDataProvider<NormTreeNode>
 	async updateTreeItem(editor: vscode.TextEditor) {
 		if (editor.document.uri.scheme != 'file')
 			return
-		const file_path = editor.document.uri.path
 
-		const new_data = await this.getUnignoredNormData(file_path)
+		const new_data = await this.getUnignoredNormData(editor.document.uri)
+
+		const file_path = editor.document.uri.path
 		const new_data_string = JSON.stringify(new_data)
 		let changed = false
 		for (const folder in this.data) {

@@ -33,7 +33,7 @@ async function updateDecorations(editor: vscode.TextEditor, ignores: IgnoreSyste
 
 	log('Executing norminette on:', path)
 
-	const data: NormData = await execNorminette(path, env.command)
+	const data: NormData = await execNorminette(env.command, path)
 	if (data)
 		applyDecorations(data, editor, env.ignoreErrors, env.displayErrorName)
 	else
