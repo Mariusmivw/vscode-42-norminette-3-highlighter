@@ -80,12 +80,14 @@ export class NorminetteProvider implements vscode.TreeDataProvider<NormTreeNode>
 		for (const [name, type] of items) {
 			if (name === '.git')
 				continue
-			const path = `${uri.path}/${name}`
-			const itemUri = uri.with({ path })
+			let itemPath = path.join(uri.path, name)
+			if (type & vscode.FileType.Directory)
+				itemPath += '/'
+			const itemUri = uri.with({ path: itemPath })
 			if (isIgnored(itemUri, this.ignores))
 				continue
 			if (type & vscode.FileType.File)
-				files.push(path)
+				files.push(itemPath)
 			else if (type & vscode.FileType.SymbolicLink)
 				{ /* do something */ }
 			else if (type & vscode.FileType.Directory)

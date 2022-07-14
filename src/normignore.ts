@@ -69,16 +69,25 @@ export function initNormignore(): IgnoreSystem {
 	return ignores
 }
 
+function relative(from: string, to: string) {
+	const file_path = path.relative(from, to);
+	if (to.endsWith('/'))
+		return file_path + '/'
+	return file_path
+}
+
 export function isIgnored(fileUri: vscode.Uri, ignores: IgnoreSystem): boolean {
 	const workspace = vscode.workspace.getWorkspaceFolder(fileUri).uri.path
 	if (!workspace || !ignores.workspaces[workspace])
 		return false
-	const filePath = path.relative(workspace, fileUri.path)
+	const filePath = relative(workspace, fileUri.path)
 	if (ignores.ignored.includes(filePath))
 		return true
 	if (ignores.notIgnored.includes(filePath))
 		return false
 	const parts = filePath.split('/')
+	if (filePath.endsWith('/'))
+		parts.pop();
 	let folder: string
 	for (let dirs = 1; dirs <= parts.length; dirs++) {
 		const folderToCheck = path.dirname(parts.slice(0, dirs).join('/'))
@@ -90,11 +99,11 @@ export function isIgnored(fileUri: vscode.Uri, ignores: IgnoreSystem): boolean {
 	}
 	if (!folder)
 		return false
-	let result = ignores.workspaces[workspace][folder].test(path.relative(folder, filePath))
+	let result = ignores.workspaces[workspace][folder].test(relative(folder, filePath))
 	while (folder != '.' && !result.ignored && !result.unignored) {
 		folder = path.dirname(folder)
 		if (ignores.workspaces[workspace][folder])
-			result = ignores.workspaces[workspace][folder].test(path.relative(folder, filePath))
+			result = ignores.workspaces[workspace][folder].test(relative(folder, filePath))
 	}
 	return result.ignored
 }

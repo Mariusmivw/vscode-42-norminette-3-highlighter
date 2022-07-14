@@ -69,6 +69,8 @@ function normDecrypt(normLine: string): NormInfo {
 }
 
 export async function execNorminette(command: string, ...paths: string[]): Promise<NormData | null> {
+	if (paths.length === 0)
+		return null
 	const { stdout } = await execAsync(`${command} '${paths.join("' '")}'`)
 	const lines = stdout.split('\n').slice(0, -1)
 	const normDecrypted: NormData = {}
