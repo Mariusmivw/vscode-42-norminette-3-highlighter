@@ -67,12 +67,12 @@ export class NorminetteProvider implements vscode.TreeDataProvider<NormTreeNode>
 	}
 
 	private async getUnignoredNormData(path: vscode.Uri): Promise<NormData> {
-		const files = await this.getAllUnignoredFilesRecursively(path);
+		const files = await this.getAllUnignoredFilesRecursively(path, getEnvironmentVariables().regex);
 		// log(files);
 		return execNorminette(getEnvironmentVariables().command, ...files);
 	}
 
-	private async getAllUnignoredFilesRecursively(uri: vscode.Uri, files: string[] = [])
+	private async getAllUnignoredFilesRecursively(uri: vscode.Uri, regex: RegExp, files: string[] = [])
 	{
 		if ((await vscode.workspace.fs.stat(uri)).type & vscode.FileType.File)
 			return [ uri.path ]
@@ -80,6 +80,8 @@ export class NorminetteProvider implements vscode.TreeDataProvider<NormTreeNode>
 		for (const [name, type] of items) {
 			if (name === '.git')
 				continue
+			if (type & vscode.FileType.File && !regex.test(name))
+				continue ;
 			let itemPath = path.join(uri.path, name)
 			if (type & vscode.FileType.Directory)
 				itemPath += '/'
@@ -91,7 +93,7 @@ export class NorminetteProvider implements vscode.TreeDataProvider<NormTreeNode>
 			else if (type & vscode.FileType.SymbolicLink)
 				{ /* do something */ }
 			else if (type & vscode.FileType.Directory)
-				await this.getAllUnignoredFilesRecursively(itemUri, files)
+				await this.getAllUnignoredFilesRecursively(itemUri, regex, files)
 		}
 		return files
 	}
