@@ -30,7 +30,7 @@ export function initNormignore(): IgnoreSystem {
 	}
 
 	function get(fileUri: vscode.Uri): { workspace: string, ignorePath: string } {
-		const workspace = vscode.workspace.getWorkspaceFolder(fileUri).uri.path
+		const workspace = vscode.workspace.getWorkspaceFolder(fileUri)?.uri.path
 		if (!workspace)
 			return { workspace: null, ignorePath: null }
 		const ignorePath = path.dirname(path.relative(workspace, fileUri.path))
@@ -77,7 +77,7 @@ function relative(from: string, to: string) {
 }
 
 export function isIgnored(fileUri: vscode.Uri, ignores: IgnoreSystem): boolean {
-	const workspace = vscode.workspace.getWorkspaceFolder(fileUri).uri.path
+	const workspace = vscode.workspace.getWorkspaceFolder(fileUri)?.uri.path
 	if (!workspace || !ignores.workspaces[workspace])
 		return false
 	const filePath = relative(workspace, fileUri.path)

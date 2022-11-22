@@ -75,7 +75,7 @@ export function activate(context: vscode.ExtensionContext) {
 		treeDataProvider: norminetteProvider
 	})
 	cmds['refresh-tree'] = () => {
-		log(vscode.workspace.workspaceFolders.map(f=>f.uri.path))
+		log(vscode.workspace.workspaceFolders.map((f) => f.uri.path))
 		norminetteProvider.updateEntireTree()
 	}
 

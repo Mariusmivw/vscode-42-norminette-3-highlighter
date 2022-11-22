@@ -100,7 +100,7 @@ export class NorminetteProvider implements vscode.TreeDataProvider<NormTreeNode>
 
 	updateEntireTree(do_refresh = true) {
 		this.data = {}
-		for (const folder of this.workspaceFolders) {
+		for (const folder of this.workspaceFolders ?? []) {
 			this.data[folder.uri.path] = this.getUnignoredNormData(folder.uri)
 		}
 		if (do_refresh)
