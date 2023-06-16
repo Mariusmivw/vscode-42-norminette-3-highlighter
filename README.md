@@ -1,4 +1,10 @@
 <img src="https://raw.githubusercontent.com/Mariusmivw/vscode-42-norminette-3-highlighter/master/img/42.png" width=128>
+<a href="https://marketplace.visualstudio.com/items?itemName=MariusvanWijk-JoppeKoers.codam-norminette-3">
+  <img alt="VS Code Marketplace Downloads" src="https://img.shields.io/visual-studio-marketplace/d/MariusvanWijk-JoppeKoers.codam-norminette-3">
+</a>
+<a href="https://marketplace.visualstudio.com/items?itemName=MariusvanWijk-JoppeKoers.codam-norminette-3">
+  <img alt="VS Code Marketplace Installs" src="https://img.shields.io/visual-studio-marketplace/i/MariusvanWijk-JoppeKoers.codam-norminette-3">
+</a>
 
 # 42 Norminette V3.x for VSCode
 This extension is a Norminette (version 3.x) decorator for 42 in VSCode.\
