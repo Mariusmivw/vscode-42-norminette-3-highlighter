@@ -1,9 +1,13 @@
 import { exec } from 'child_process'
+import { EnvironmentVariables } from './getEnvironmentVariables'
 
-async function execAsync(command): Promise<{ stdout: string, stderr: string } | null> {
-	return new Promise((resolve, reject) => {
-		exec(`${command}`, (error, stdout, stderr) => {
-			resolve({ stdout, stderr })
+async function execAsync(command: string, timeoutMs: number = 10_000): Promise<{ stdout: string, stderr: string } | 'aborted'> {
+	return new Promise(resolve => {
+		const abort = new AbortController()
+		const timeout = setTimeout(() => abort.abort(), timeoutMs)
+		exec(`${command}`, { signal: abort.signal }, (error, stdout, stderr) => {
+			clearTimeout(timeout)
+			resolve(error ? 'aborted' : { stdout, stderr })
 		})
 	})
 }
@@ -68,11 +72,15 @@ function normDecrypt(normLine: string): NormInfo {
 	}
 }
 
-export async function execNorminette(command: string, ...paths: string[]): Promise<NormData | null> {
+export async function execNorminette(env: EnvironmentVariables, ...paths: string[]): Promise<NormData | 'aborted' | null> {
 	if (paths.length === 0)
 		return null
-	const { stdout } = await execAsync(`${command} '${paths.join("' '")}'`)
-	const lines = stdout.split('\n').slice(0, -1)
+	const cmd = `${env.command} '${paths.join("' '")}'`
+	const out = await execAsync(cmd, env.commandTimeoutMs)
+	if (out === 'aborted') {
+		return 'aborted'
+	}
+	const lines = out.stdout.split('\n').slice(0, -1)
 	const normDecrypted: NormData = {}
 	let currentFile: string
 	for (const line of lines) {

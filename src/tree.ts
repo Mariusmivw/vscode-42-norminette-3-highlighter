@@ -69,7 +69,9 @@ export class NorminetteProvider implements vscode.TreeDataProvider<NormTreeNode>
 	private async getUnignoredNormData(path: vscode.Uri): Promise<NormData> {
 		const files = await this.getAllUnignoredFilesRecursively(path, getEnvironmentVariables().regex);
 		// log(files);
-		return execNorminette(getEnvironmentVariables().command, ...files);
+		let data = await execNorminette(getEnvironmentVariables(), ...files);
+		data = data === 'aborted' ? null : data;
+		return data
 	}
 
 	private async getAllUnignoredFilesRecursively(uri: vscode.Uri, regex: RegExp, files: string[] = [])
