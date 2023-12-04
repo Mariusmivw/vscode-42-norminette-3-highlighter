@@ -12,7 +12,7 @@ let outputChannel: vscode.OutputChannel
 export function log(...msgs: any[]) {
 	if (!outputChannel)
 		outputChannel = vscode.window.createOutputChannel('codam-norminette-3')
-	outputChannel.appendLine(msgs.map((msg) => util.inspect(msg, false, null, false)).join(' '))
+	outputChannel.appendLine(msgs.map((msg) => typeof msg === 'string' ? msg : util.inspect(msg, false, null, false)).join(' '))
 }
 
 async function updateDecorations(editor: vscode.TextEditor, ignores: IgnoreSystem, env: EnvironmentVariables) {
@@ -32,12 +32,17 @@ async function updateDecorations(editor: vscode.TextEditor, ignores: IgnoreSyste
 		return
 
 	log('Executing norminette on:', path)
-
-	const data: NormData = await execNorminette(env.command, path)
+	const now = Date.now()
+	const data = await execNorminette(env, path)
+	if (data === 'aborted') {
+		vscode.window.showErrorMessage(`Failed to execute norminette within ${env.commandTimeoutMs}ms\n. See https://github.com/Mariusmivw/vscode-42-norminette-3-highlighter/blob/master/common-issues.md`)
+		return
+	}
 	if (data)
 		applyDecorations(data, editor, env.ignoreErrors, env.displayErrorName)
 	else
 		clearDecorations(editor)
+	log(`Done in ${Date.now() - now}ms`)
 }
 
 export function activate(context: vscode.ExtensionContext) {
@@ -46,6 +51,8 @@ export function activate(context: vscode.ExtensionContext) {
 	let env: EnvironmentVariables = getEnvironmentVariables()
 	if (!env)
 		return
+	log(`Config:`, env)
+
 	const ignores: IgnoreSystem = initNormignore()
 
 	const cmds = {

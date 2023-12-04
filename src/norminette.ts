@@ -1,9 +1,15 @@
 import { exec } from 'child_process'
+import { EnvironmentVariables } from './getEnvironmentVariables'
 
-async function execAsync(command): Promise<{ stdout: string, stderr: string } | null> {
-	return new Promise((resolve, reject) => {
-		exec(`${command}`, (error, stdout, stderr) => {
-			resolve({ stdout, stderr })
+async function execAsync(command: string, timeoutMs: number = 10_000): Promise<{ stdout: string, stderr: string } | 'aborted'> {
+	return new Promise(resolve => {
+		const abort = new AbortController()
+		const timeout = setTimeout(() => abort.abort(), timeoutMs)
+		exec(`${command}`, { signal: abort.signal }, (error, stdout, stderr) => {
+			clearTimeout(timeout)
+			// @ts-ignore
+			const wasAborted = error.code === 'ABORT_ERR' || error.message === 'The operation was aborted'
+			resolve(wasAborted ? 'aborted' : { stdout, stderr })
 		})
 	})
 }
@@ -39,14 +45,12 @@ function normDecrypt(normLine: string): NormInfo {
 	catch (e) {
 		try {
 			const [fullText, token_or_line] = normLine.match(/(?:\s|\033\[.*m)*Error: Unrecognized (token|line) .*/)
-			if (token_or_line === 'token')
-			{
+			if (token_or_line === 'token') {
 				var [_, errorText, line_str, col_str] = normLine.match(/.* (Unrecognized token) line (\d+), col (\d+)/)
 				var line = parseInt(line_str) - 1
 				var col = parseInt(col_str) - 2
 			}
-			else if (token_or_line === 'line')
-			{
+			else if (token_or_line === 'line') {
 				const [_, errorText1, line_str, col_str, errorText2] = normLine.match(/.* (Unrecognized line )\((\d+), (\d+)\) (while parsing line)/)
 				var errorText = errorText1 + errorText2
 				var line = parseInt(line_str) - 1
@@ -68,11 +72,14 @@ function normDecrypt(normLine: string): NormInfo {
 	}
 }
 
-export async function execNorminette(command: string, ...paths: string[]): Promise<NormData | null> {
+export async function execNorminette(env: EnvironmentVariables, ...paths: string[]): Promise<NormData | 'aborted' | null> {
 	if (paths.length === 0)
 		return null
-	const { stdout } = await execAsync(`${command} '${paths.join("' '")}'`)
-	const lines = stdout.split('\n').slice(0, -1)
+	const out = await execAsync(`${env.command} '${paths.join("' '")}'`, env.commandTimeoutMs)
+	if (out === 'aborted') {
+		return 'aborted'
+	}
+	const lines = out.stdout.split('\n').slice(0, -1)
 	const normDecrypted: NormData = {}
 	let currentFile: string
 	for (const line of lines) {

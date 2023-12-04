@@ -31,6 +31,7 @@ In VSCode's settings.json you can add these lines if you want to customize your 
 ```json5
 {
 	"codam-norminette-3.command": "norminette", // command that the highlighter executes to get the norm errors
+	"codam-norminette-3.commandTimeoutMs": 10000, // Kill norminette process after this time (in ms) default 10000
 	"codam-norminette-3.fileregex": "\\.[ch]$", // regex that matches the files you want to norm check
 	"codam-norminette-3.ignoreErrors": [ // do not highlight these norm errors
 		// "WRONG_SCOPE_COMMENT",

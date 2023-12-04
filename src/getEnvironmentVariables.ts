@@ -28,6 +28,7 @@ function validateCommand(command: string): CommandData | null {
 
 export type EnvironmentVariables = {
 	command: string,
+	commandTimeoutMs: number,
 	wsl: boolean,
 	regex: RegExp,
 	ignoreErrors: string[],
@@ -40,6 +41,7 @@ export function getEnvironmentVariables(): EnvironmentVariables | null {
 		return null
 	return {
 		command: command.command,
+		commandTimeoutMs: Number(workspaceConfiguration.get(`commandTimeoutMs`) || 10_000),
 		wsl: command.wsl,
 		regex: new RegExp(workspaceConfiguration.get(`regex`)),
 		ignoreErrors: workspaceConfiguration.get(`ignoreErrors`) as string[],
