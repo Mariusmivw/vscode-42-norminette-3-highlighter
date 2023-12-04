@@ -41,6 +41,9 @@ endif
 $(SECRETS_DECRYPT): $(SECRETS_FILE)
 	@gpg -o $(SECRETS_DECRYPT) -d $(SECRETS_FILE)
 
+encrypt: $(SECRETS_DECRYPT)
+	gpg --yes --no-symkey-cache --symmetric --output $(SECRETS_FILE) $(SECRETS_DECRYPT)
+
 publish: decrypt
 	echo "$(VSC_TOKEN)" | $(VSCE) publish
 	$(OVSX) publish -p $(VSX_TOKEN)
