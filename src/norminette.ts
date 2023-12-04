@@ -7,7 +7,9 @@ async function execAsync(command: string, timeoutMs: number = 10_000): Promise<{
 		const timeout = setTimeout(() => abort.abort(), timeoutMs)
 		exec(`${command}`, { signal: abort.signal }, (error, stdout, stderr) => {
 			clearTimeout(timeout)
-			resolve(error ? 'aborted' : { stdout, stderr })
+			// @ts-ignore
+			const wasAborted = error.code === 'ABORT_ERR' || error.message === 'The operation was aborted'
+			resolve(wasAborted ? 'aborted' : { stdout, stderr })
 		})
 	})
 }
