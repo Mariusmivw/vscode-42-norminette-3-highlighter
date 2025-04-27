@@ -3,27 +3,48 @@ import * as child_process from 'child_process'
 import * as os from 'os'
 
 type CommandData = { command: string, wsl: boolean }
-function validateCommand(command: string): CommandData | null {
+
+const validNorminetteVersionRegex = /norminette 3\.\d+\.\d+/
+
+/**
+ * Checks if the command is valid by running it with the -v flag.
+ * If the command is not found, it will try to run it with WSL if on Windows.
+ * @returns {string | null} The command if valid and with WSL if needed, null otherwise.
+ */
+function getValidCommand(command: string): string | null {
 	try {
-		const stdout = child_process.execSync(`${command} -v`).toString()
-		if (!(/3\.\d+\.\d+\s*$/.test(stdout))) {
-			vscode.window.showErrorMessage(`Nominette: wrong version: ${stdout}, must be 3.x.x.`)
-			return null
+		child_process.execSync(`${command} -v`).toString()
+		return command
+	} catch {
+		if (os.platform() == 'win32' && !command.startsWith('wsl ')) {
+			try {
+				child_process.execSync(`wsl ${command} -v`).toString()
+				return `wsl ${command}`
+			} catch {}
 		}
 	}
-	catch {
-		if (os.platform() == 'win32') {
-			try {
-				const stdout = child_process.execSync(`wsl ${command} -v`).toString()
-				if (!(/3\.\d+\.\d+\s*$/.test(stdout)))
-					vscode.window.showErrorMessage(`Nominette: wrong version: ${stdout}, must be 3.x.x.`)
-				return { command: `wsl ${command}`, wsl: true }
-			} catch { }
-		}
+	return null
+}
+
+/**
+ * Validates the command by checking if it is available and if the version is correct.
+ */
+function validateCommand(command: string): CommandData | null {
+	let validCommand = getValidCommand(command)
+
+	if (!validCommand) {
 		vscode.window.showErrorMessage(`Norminette: \`${command}' not found, see https://github.com/42School/norminette for installation instructions.`)
 		return null
 	}
-	return { command, wsl: command.startsWith('wsl ') }
+
+	const stdout = child_process.execSync(`${validCommand} -v`).toString()
+
+	if (!validNorminetteVersionRegex.test(stdout)) {
+		vscode.window.showErrorMessage(`Norminette: wrong version: ${stdout}, must be 3.x.x.`)
+		return null
+	}
+
+	return { command: validCommand, wsl: command.startsWith('wsl ') }
 }
 
 export type EnvironmentVariables = {
