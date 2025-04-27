@@ -44,7 +44,7 @@ function validateCommand(command: string): CommandData | null {
 		return null
 	}
 
-	return { command: validCommand, wsl: command.startsWith('wsl ') }
+	return { command: validCommand, wsl: validCommand.startsWith('wsl ') }
 }
 
 export type EnvironmentVariables = {
