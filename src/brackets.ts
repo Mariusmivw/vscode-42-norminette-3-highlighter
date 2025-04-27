@@ -1,8 +1,7 @@
 import * as vscode from 'vscode'
 
 export function parseBrackets(text: string | Buffer): vscode.Range[] {
-	if (text instanceof Buffer)
-		text = text.toString()
+	text = text.toString()
 	const lines = text.split('\n')
 	const bracketPairs: vscode.Range[] = []
 	let endPos = new vscode.Position(0, 0)
