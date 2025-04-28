@@ -12,7 +12,7 @@ let outputChannel: vscode.OutputChannel
 export function log(...msgs: any[]) {
 	if (!outputChannel)
 		outputChannel = vscode.window.createOutputChannel('codam-norminette-3')
-	outputChannel.appendLine(msgs.map((msg) => typeof msg === 'string' ? msg : util.inspect(msg, false, null, false)).join(' '))
+	outputChannel.appendLine(`[${new Date(Date.now()).toUTCString()}] ` + msgs.map((msg) => typeof msg === 'string' ? msg : util.inspect(msg, false, null, false)).join(' '))
 }
 
 async function updateDecorations(editor: vscode.TextEditor, ignores: IgnoreSystem, env: EnvironmentVariables) {

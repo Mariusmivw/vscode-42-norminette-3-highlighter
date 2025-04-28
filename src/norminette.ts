@@ -1,5 +1,6 @@
 import { exec } from 'child_process'
 import { EnvironmentVariables } from './getEnvironmentVariables'
+import { log } from './extension'
 
 async function execAsync(command: string, timeoutMs: number = 10_000): Promise<{ stdout: string, stderr: string } | 'aborted'> {
 	return new Promise(resolve => {
@@ -8,7 +9,7 @@ async function execAsync(command: string, timeoutMs: number = 10_000): Promise<{
 		exec(`${command} --no-colors`, { signal: abort.signal }, (error, stdout, stderr) => {
 			clearTimeout(timeout)
 			// @ts-ignore
-			const wasAborted = error.code === 'ABORT_ERR' || error.message === 'The operation was aborted'
+			const wasAborted = error && (error.code === 'ABORT_ERR' || error.message === 'The operation was aborted')
 			resolve(wasAborted ? 'aborted' : { stdout, stderr })
 		})
 	})
@@ -83,7 +84,11 @@ export async function execNorminette(env: EnvironmentVariables, ...paths: string
 	const normDecrypted: NormData = {}
 	let currentFile: string
 	for (const line of lines) {
-		if (/(Error|Notice):/.test(line)) {
+		if (/: (Error|OK)!$/.test(line)) {
+			const [_, filename, err_ok] = line.match(/(.*): (Error|OK)!$/)
+			currentFile = filename
+		}
+		else if (/(Error|Notice):/.test(line)) {
 			if (line.endsWith('is not valid C or C header file'))
 				continue
 			// log('line:', line, '\nescaped:', escape(line))
@@ -94,8 +99,7 @@ export async function execNorminette(env: EnvironmentVariables, ...paths: string
 				normDecrypted[currentFile].push(decrypted)
 			}
 		} else {
-			const [_, filename, err_ok] = line.match(/(.*): (Error|OK)!$/)
-			currentFile = filename
+			log(`Unexpected norm output: "${line}", in file: "${currentFile}"`)
 		}
 	}
 	if (Object.keys(normDecrypted).length == 0)
