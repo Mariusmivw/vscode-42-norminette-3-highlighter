@@ -98,7 +98,7 @@
 					"default": "norminette",
 					"description": "Specifies norminette command"
 				},
-                "codam-norminette-3.commandTimeoutMs": {
+				"codam-norminette-3.commandTimeoutMs": {
 					"type": "number",
 					"default": 10000,
 					"description": "Kill norminette command after this many milliseconds"
