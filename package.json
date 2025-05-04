@@ -2,7 +2,7 @@
 	"name": "codam-norminette-3",
 	"displayName": "42 Norminette Highlighter (3.x)",
 	"description": "42 Norminette decorator for VSCode",
-	"version": "4.6.3",
+	"version": "4.7.0",
 	"publisher": "MariusvanWijk-JoppeKoers",
 	"license": "MIT",
 	"engines": {
@@ -34,9 +34,9 @@
 	"devDependencies": {
 		"@types/node": "^18.0.0",
 		"@types/vscode": "^1.35.0",
-		"ovsx": "^0.5.1",
+		"ovsx": "^0.10.1",
 		"typescript": "^5.3.2",
-		"vsce": "^2.6.3"
+		"vsce": "^2.15.0"
 	},
 	"contributes": {
 		"menus": {
