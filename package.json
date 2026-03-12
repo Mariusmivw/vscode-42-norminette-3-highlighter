@@ -95,7 +95,7 @@
 				},
 				"codam-norminette-3.command": {
 					"type": "string",
-					"default": "norminette",
+					"default": "exec norminette",
 					"description": "Specifies norminette command"
 				},
 				"codam-norminette-3.commandTimeoutMs": {
